@@ -1,0 +1,10 @@
+# ignore node modules folder
+node_modules/
+
+#ignore folders which images and files are saved
+
+public/assets/groupImages/
+
+public/assets/send/
+
+public/assets/uploadImages/
