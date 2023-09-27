@@ -10,6 +10,7 @@ async function addMessage(message, to_user_info) {
     var months = time.getMonth();
     var days = time.getDate();
     var size, name;
+    var filename;
 
     if(message.type !== 'text'){
         size = parseInt(JSON.parse(message.message).size);
@@ -19,6 +20,10 @@ async function addMessage(message, to_user_info) {
         if(name.split(' ').length === 1 && name.length>20){
             name = '...'+name.substring(name.length-20);
         }
+
+        filename = JSON.parse(message.message).savedName;
+        sessionStorage.removeItem('filename');
+        sessionStorage.setItem('filename', filename);
     }
 
     if(size > 1000000){
@@ -118,7 +123,7 @@ async function addMessage(message, to_user_info) {
     }
 
 
-    if (message.from_user_id !== to_user_info.user_id) {
+    if (message.from_user_id !== to_user_info.user_id) {    
 
         if(message.type === 'text'){
 
@@ -149,9 +154,12 @@ async function addMessage(message, to_user_info) {
             temp +=
              ` <li class="right" id="message${message.message_id}">
                     <div class="conversation-list">
-                        <div class="ctext-wrap">
+                        <div class="ctext-wrap" style="width:40%; margin-left:60%;">
                             <div class="ctext-wrap-content" style="padding:0px;"> 
-                                <img class="mb-0" src="public/assets/send/${JSON.parse(message.message).savedName}" style="width:13rem; margin:0px;">
+                               <a href="#" onclick="show_photo_sent(${message.message_id})">
+                                    <img class="mb-0 img-thumbnail" src="public/assets/send/${JSON.parse(message.message).savedName}" 
+                                    style="width:100%; margin:0px;">
+                               </a>
                                 <div class="btn-group dropstart" style="position:absolute; bottom:26px;">
                                         <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
                                         <i class="ri-more-2-fill ri-lg"></i>
@@ -169,7 +177,7 @@ async function addMessage(message, to_user_info) {
                 </li>`;
 
         }else{
-
+        
             temp +=
             ` <li class="right" id="message${message.message_id}">
                    <div class="conversation-list">
@@ -177,7 +185,7 @@ async function addMessage(message, to_user_info) {
                            <div class="ctext-wrap-content ms-1"> 
                              <div class="" style="display:flex">
                                     <div>
-                                        <a href="#" onclick="openFile(${message.message_id})" class="align-middle">
+                                        <a class="align-middle" onclick="open_file()">
                                             <i class="bi bi-file-earmark-text" style="font-size:2rem"></i>
                                         </a>
                                     </div>
@@ -212,7 +220,7 @@ async function addMessage(message, to_user_info) {
             `<li >
                 <div class="conversation-list">
                     <div class="chat-avatar">
-                        <img src="public/assets/uploadImages/${to_user_info.profile_photo}" alt="avatar-2">
+                        <img src="public/assets/send/uploadImages/${to_user_info.profile_photo}" alt="avatar-2">
                     </div>
                     <div class="ctext-wrap">
                         <div class="conversation-name">${to_user_info.account_name}</div>
@@ -231,12 +239,15 @@ async function addMessage(message, to_user_info) {
                `<li >
                    <div class="conversation-list">
                        <div class="chat-avatar">
-                           <img src="public/assets/uploadImages/${to_user_info.profile_photo}" alt="avatar-2">
+                           <img src="public/assets/send/uploadImages/${to_user_info.profile_photo}" alt="avatar-2">
                        </div>
                        <div class="ctext-wrap">
                            <div class="conversation-name">${to_user_info.account_name}</div>
-                           <div class="ctext-wrap-content"  style="padding:0px;">
-                               <img class="mb-0" src="public/assets/send/${JSON.parse(message.message).savedName}" style="width:13rem; margin:0px;">
+                           <div class="ctext-wrap-content"  style="padding:0px; width:40%;">
+                                <a href="#" onclick="show_photo_sent(${message.message_id})">
+                                    <img class="mb-0 img-thumbnail" src="public/assets/send/${JSON.parse(message.message).savedName}" 
+                                    style="width:100%;">
+                                </a>
                            </div>
                            <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i>${hours}:${minutes}</p>
                        </div>
@@ -250,13 +261,13 @@ async function addMessage(message, to_user_info) {
             `<li >
                 <div class="conversation-list">
                     <div class="chat-avatar">
-                        <img src="public/assets/uploadImages/${to_user_info.profile_photo}" alt="avatar-2">
+                        <img src="public/assets/send/uploadImages/${to_user_info.profile_photo}" alt="avatar-2">
                     </div>
                     <div class="ctext-wrap">
                         <div class="conversation-name">${to_user_info.account_name}</div>
                         <div class="ctext-wrap-content" style="display:flex">
                             <div style="margin-right:3px;">
-                                <a href="#" onclick="openFile(${message.message_id})" class="align-middle  text-white">
+                                <a href="#" onclick="open_file()" class="align-middle  text-white">
                                     <i class="bi bi-file-earmark-text" style="font-size:2rem"></i>
                                 </a>
                             </div>
@@ -421,7 +432,7 @@ const add_contacts = async (user) => {
                 <div class="card m-0">
                 <div class="row no-gutters align-items-center">
                     <div class="col-5 col-sm-4">
-                    <img src="public/assets/uploadImages/${user.profile_photo}" class="rounded-circle ms-3" style="height:80px; width:80px;">
+                    <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle ms-3" style="height:80px; width:80px;">
                     </div>
                     <div class="col-7 col-sm-8">
                         <div class="card-body">
@@ -484,7 +495,7 @@ const start_new_chat = async (userId) => {
     $('#toUserPhoto').html('');
     $('#toUserPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail" 
     style="background-position: center; height: 140px; width: 140px; object-fit: cover;"
-     src="public/assets/uploadImages/${response.profile_photo}" alt="Card image">`);
+     src="public/assets/send/uploadImages/${response.profile_photo}" alt="Card image">`);
 
     document.getElementById('search').removeAttribute('hidden');
     document.getElementById('params').removeAttribute('hidden');
@@ -507,7 +518,7 @@ const start_new_chat = async (userId) => {
     ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_chat(${response.user_id})" id="b${response.user_id}">
             <div class="d-flex">
                 <div class="user-img away  align-self-center me-4 ">
-                    <img src="public/assets/uploadImages/${response.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                    <img src="public/assets/send/uploadImages/${response.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
                 </div>
                 <div class="flex-1 overflow-hidden align-self-center">
                     <h5 class="text-truncate font-size-14 mb-1">${response.account_name}</h5>
@@ -600,7 +611,7 @@ const add_chats = async (user) => {
             ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_chat(${user.user_id})" id="b${user.user_id}">
                     <div class="d-flex">
                         <div class="user-img away  align-self-center me-4 ">
-                            <img src="public/assets/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
                         </div>
                         <div class="flex-1 overflow-hidden align-self-center">
                             <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
@@ -618,7 +629,7 @@ const add_chats = async (user) => {
             ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_chat(${user.user_id})" id="b${user.user_id}">
                     <div class="d-flex">
                         <div class="user-img away  align-self-center me-4 ">
-                            <img src="public/assets/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
                         </div>
                         <div class="flex-1 overflow-hidden align-self-center">
                             <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
@@ -635,7 +646,7 @@ const add_chats = async (user) => {
         ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_chat(${user.user_id})" id="b${user.user_id}">
                 <div class="d-flex">
                     <div class="user-img away  align-self-center me-4 ">
-                        <img src="public/assets/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
                     </div>
                     <div class="flex-1 overflow-hidden align-self-center">
                         <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
@@ -672,7 +683,6 @@ $(document).ready(function () {
     get_chats();
 });
 
-
 var myInterval = setInterval(() => { }, 10000);
 
 const start_chat = async (userId) => {  
@@ -705,7 +715,7 @@ const start_chat = async (userId) => {
     $('#cardBody').append(cardBody);
 
     $('#toUserPhoto').html('');
-    $('#toUserPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail" style="object-fit: cover; height:140px; width:140px" src="public/assets/uploadImages/${response.profile_photo}" alt="Card image">`);
+    $('#toUserPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail" style="object-fit: cover; height:140px; width:140px" src="public/assets/send/uploadImages/${response.profile_photo}" alt="Card image">`);
 
     document.getElementById('search').removeAttribute('hidden');
     document.getElementById('params').removeAttribute('hidden');
@@ -817,7 +827,7 @@ const add_unreplied = async (user) => {
         `<li id="c${user.user_id}">
             <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_unreplied_chat(${user.user_id})">
                 <div class="d-flex">
-                    <img src="public/assets/uploadImages/${user.profile_photo}" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                    <img src="public/assets/send/uploadImages/${user.profile_photo}" class="me-3 rounded-circle avatar-xs" alt="user-pic">
                     <div class="flex-1">
                         <h6 class="mt-0 mb-1">${user.account_name}</h6>
                         <div class="font-size-12 text-muted">
@@ -839,7 +849,7 @@ const add_unreplied = async (user) => {
         `<li id="c${user.user_id}">
             <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_unreplied_chat(${user.user_id})">
                 <div class="d-flex">
-                    <img src="public/assets/uploadImages/${user.profile_photo}" class="me-3 rounded-circle avatar-xs" alt="user-pic">
+                    <img src="public/assets/send/uploadImages/${user.profile_photo}" class="me-3 rounded-circle avatar-xs" alt="user-pic">
                     <div class="flex-1">
                         <h6 class="mt-0 mb-1">${user.account_name}</h6>
                         <div class="font-size-12 text-muted">
@@ -926,7 +936,7 @@ const show_user_profile = async () => {
     let userProfile =
         ` <div class="col-md-4">
             <img class="card-img rounded-circle img-thumbnail" style="background-position: center; height: 140px; width: 140px; object-fit: cover;"
-            src="public/assets/uploadImages/${user.profile_photo}" alt="Card image" id="userProf">
+            src="public/assets/send/uploadImages/${user.profile_photo}" alt="Card image" id="userProf">
         </div>
         <div class="col-md-8">
             <div class="card-body">
@@ -966,8 +976,8 @@ const updatePhoto = async () => {
     })
     .then(response => response.json())
     .then(response => {
-        document.getElementById('userProf').setAttribute('src', `public/assets/uploadImages/${response.result}`);
-        document.getElementById('topRightPhoto').setAttribute('src', `public/assets/uploadImages/${response.result}`);
+        document.getElementById('userProf').setAttribute('src', `public/assets/send/uploadImages/${response.result}`);
+        document.getElementById('topRightPhoto').setAttribute('src', `public/assets/send/uploadImages/${response.result}`);
         document.getElementById('btnClosePhoto').click();
     });
 
@@ -1038,7 +1048,7 @@ const addAllUsers = (user) => {
             <label class="form-check-label ms-2" for="formCheck${user.user_id}">
                 <div class="d-flex">
                     <div class="user-img away align-self-center me-4">
-                        <img src="public/assets/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:30px;width:30px;">
+                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:30px;width:30px;">
                     </div>
                     <div class="flex-1 align-self-center me-4">
                         <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
@@ -1113,7 +1123,7 @@ const add_groups = (group)=>{
                 <div class="card m-0">
                     <div class="row no-gutters align-items-center">
                         <div class="col-5 col-sm-4">
-                        <img src="public/assets/groupImages/${group.photo}" class="rounded-circle img-thumbnail ms-3" style="height:80px; width:80px">
+                        <img src="public/assets/send/groupImages/${group.photo}" class="rounded-circle img-thumbnail ms-3" style="height:80px; width:80px">
                         </div>
                         <div class="col-7 col-sm-8">
                             <div class="card-body">
@@ -1194,7 +1204,7 @@ const start_new_group = async(id)=>{
     $('#cardBodyGroup').append(cardBody);
 
     $('#groupPhoto').html('');
-    $('#groupPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail mt-3" style="width:130px; height:130px;" src="public/assets/groupImages/${group.photo}" alt="Card image">`);
+    $('#groupPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail mt-3" style="width:130px; height:130px;" src="public/assets/send/groupImages/${group.photo}" alt="Card image">`);
 
 
     membersTemp='';
@@ -1220,7 +1230,7 @@ const start_new_group = async(id)=>{
         `<a href="#groupMemberProfile" data-bs-toggle="modal" class="list-group-item list-group-item-action fw-bolder" data-bs-dismiss="modal" onclick="show_member_profile(${owner.user_id})">
             <div class="d-flex">
                 <div class="user-img away  align-self-center me-4 ">
-                    <img src="public/assets/uploadImages/${owner.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                    <img src="public/assets/send/uploadImages/${owner.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
                 </div>
                 <div class="flex-1 overflow-hidden align-self-center">
                     <h5 class="text-truncate font-size-14 mb-1">${owner.account_name}</h5>
@@ -1301,7 +1311,7 @@ const add_members = (user)=>{
     ` <a href="#groupMemberProfile" data-bs-toggle="modal" class="list-group-item list-group-item-action fw-bolder" data-bs-dismiss="modal" onclick="show_member_profile(${user.user_id})">
             <div class="d-flex">
                 <div class="user-img away  align-self-center me-4 ">
-                    <img src="public/assets/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                    <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
                 </div>
                 <div class="flex-1 overflow-hidden align-self-center">
                     <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
@@ -1328,7 +1338,7 @@ const show_member_profile = async(userId)=>{
     let userProfile =
         `<div class="col-md-4">
             <img class="card-img rounded-circle img-thumbnail" style="background-position: center; height: 130px; width: 130px; object-fit: cover;"
-            src="public/assets/uploadImages/${user.profile_photo}" alt="Card image" id="userProf">
+            src="public/assets/send/uploadImages/${user.profile_photo}" alt="Card image" id="userProf">
         </div>
         <div class="col-md-8 mb-1">
             <div class="card-body">
@@ -1378,7 +1388,7 @@ const add_group_messages = async(message, current_user_id)=>{
     var minutes = time.getMinutes();
     var months = time.getMonth();
     var days = time.getDate();
-    var size, name;
+    var size, name, filename;
 
     if(message.type === 'application'){
         size = parseInt(JSON.parse(message.message).size);
@@ -1386,6 +1396,10 @@ const add_group_messages = async(message, current_user_id)=>{
         if(name.split(' ').length === 1 && name.length>20){
             name = '...'+name.substring(name.length-20);
         }
+
+        filename = JSON.parse(message.message).savedName;
+        sessionStorage.removeItem('filenameGr');
+        sessionStorage.setItem('filenameGr', filename);
     }
    
 
@@ -1516,9 +1530,12 @@ const add_group_messages = async(message, current_user_id)=>{
             temp +=
              ` <li class="right" id="grmess${message.id}">
                     <div class="conversation-list">
-                        <div class="ctext-wrap">
+                        <div class="ctext-wrap" style="width:40%; margin-left:60%;">
                             <div class="ctext-wrap-content" style="padding:0px;"> 
-                                <img class="mb-0" src="public/assets/send/sendGroup/${JSON.parse(message.message).savedName}" style="width:13rem; margin:0px;">
+                                <a href="#" onclick="show_photo_sent_gr(${message.id})">
+                                        <img class="mb-0 img-thumbnail" src="public/assets/send/sendGroup/${JSON.parse(message.message).savedName}" 
+                                        style="100%;">
+                                </a>
                                 <div class="btn-group dropstart" style="position:absolute; bottom:26px;">
                                         <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
                                         <i class="ri-more-2-fill ri-lg"></i>
@@ -1544,7 +1561,7 @@ const add_group_messages = async(message, current_user_id)=>{
                            <div class="ctext-wrap-content ms-1"> 
                              <div class="" style="display:flex">
                                     <div>
-                                        <a href="#" onclick="openGroupFile(${message.id})" class="align-middle">
+                                        <a onclick="openGroupFile()" class="align-middle">
                                             <i class="bi bi-file-earmark-text" style="font-size:2rem"></i>
                                         </a>
                                     </div>
@@ -1579,7 +1596,7 @@ const add_group_messages = async(message, current_user_id)=>{
             `<li >
                 <div class="conversation-list">
                     <div class="chat-avatar">
-                        <img src="public/assets/uploadImages/${message.profile_photo}" alt="avatar-2">
+                        <img src="public/assets/send/uploadImages/${message.profile_photo}" alt="avatar-2">
                     </div>
                     <div class="ctext-wrap">
                         <div class="conversation-name">${message.account_name}</div>
@@ -1598,12 +1615,15 @@ const add_group_messages = async(message, current_user_id)=>{
                `<li >
                    <div class="conversation-list">
                        <div class="chat-avatar">
-                           <img src="public/assets/uploadImages/${message.profile_photo}" alt="avatar-2">
+                           <img src="public/assets/send/uploadImages/${message.profile_photo}" alt="avatar-2">
                        </div>
                        <div class="ctext-wrap">
                            <div class="conversation-name">${message.account_name}</div>
-                           <div class="ctext-wrap-content"  style="padding:0px;">
-                               <img class="mb-0" src="public/assets/send/sendGroup/${JSON.parse(message.message).savedName}" style="width:13rem; margin:0px;">
+                           <div class="ctext-wrap-content"  style="padding:0px; width:40%;">
+                                <a href="#" onclick="show_photo_sent_gr(${message.id})">
+                                    <img class="mb-0 img-thumbnail" src="public/assets/send/sendGroup/${JSON.parse(message.message).savedName}" 
+                                    style="width:100%;">
+                                </a>
                            </div>
                            <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i>${hours}:${minutes}</p>
                        </div>
@@ -1617,13 +1637,13 @@ const add_group_messages = async(message, current_user_id)=>{
             `<li >
                 <div class="conversation-list">
                     <div class="chat-avatar">
-                        <img src="public/assets/uploadImages/${message.profile_photo}" alt="avatar-2">
+                        <img src="public/assets/send/uploadImages/${message.profile_photo}" alt="avatar-2">
                     </div>
                     <div class="ctext-wrap">
                         <div class="conversation-name">${message.account_name}</div>
                         <div class="ctext-wrap-content" style="display:flex">
                             <div style="margin-right:3px;">
-                                <a href="#" onclick="openFile(${message.id})" class="align-middle  text-white">
+                                <a href="#" onclick="openGroupFile()" class="align-middle  text-white">
                                     <i class="bi bi-file-earmark-text" style="font-size:2rem"></i>
                                 </a>
                             </div>

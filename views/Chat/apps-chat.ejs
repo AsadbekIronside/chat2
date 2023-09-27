@@ -579,8 +579,7 @@
                                 <div class="modal-body">
                                     <div id="sendfile" class="mb-3">
                                     </div>
-                                    <button type="button" class=" btn btn-primary btn-sm ms-2" onclick="send_file()"
-                                            data-bs-dismiss="modal">Send</button>
+                                    <button type="button" class=" btn btn-primary btn-sm ms-2" onclick="send_file()">Send</button>
                                 </div>
                             </div>
                         </div>
@@ -604,6 +603,22 @@
                         </div>
                     </div>
 
+                    <!-- see photo sent -->
+                    <div class="modal fade bs-example-modal-center" role="dialog" id="see_photo_sent">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content pb-0">
+                                <div class="modal-header">
+                                    <button type="button" id="btnClosePhoto" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body p-0">
+                                    <div id="photoSent" class="mb-3">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
 
                 </div>
             </div>

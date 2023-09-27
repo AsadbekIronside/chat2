@@ -1,3 +1,4 @@
+const fs = require('fs');
 
 const { postMessages, getMessages, getUser, clearChat, getOnesTypedUser, getOnesUserTyped, getMessageById,
         updateAccountName, updateProfilePhoto, getAllUsers, createGroup, getMessagesUserRelated,
@@ -833,6 +834,8 @@ const post_file = async (req, res) => {
         let to_user_id = parseInt(req.query.id);
         let file = req.file;
 
+        // console.log(req.file);
+
         var type = file.mimetype.split('/')[0];
 
         let resul = await postFileMess(
@@ -850,6 +853,24 @@ const post_file = async (req, res) => {
 
 }
 
+const get_file = async (req, res) => {
+
+   try {
+
+        let name = req.query.name;
+        // console.log(typeof name);
+
+        let path = 'public/assets/send/'+name;
+
+        let stream = fs.createReadStream(path);
+        stream.pipe(res);
+    
+   } catch (error) {
+        console.log(error);
+        return res.status(500);
+   }
+}
+
 const post_file_group = async (req, res) => {
 
     try {
@@ -858,7 +879,7 @@ const post_file_group = async (req, res) => {
         let id = parseInt(req.query.id);
         let file = req.file;
 
-        console.log('file = '+file);
+        // console.log('file = '+file);
 
         var type = file.mimetype.split('/')[0];
 
@@ -870,6 +891,59 @@ const post_file_group = async (req, res) => {
 
     } catch (error) {
         console.log(error);
+    }
+
+}
+
+const get_group_file = async (req, res) => {
+    
+    try {
+
+        let filename = req.query.name;
+        let path = 'public/assets/send/sendGroup/'+filename;
+
+        let stream = fs.createReadStream(path);
+        stream.pipe(res);
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500);
+    }
+
+}
+
+const get_file_info = async (req, res) => {
+
+    try {
+
+        let id = parseInt(req.query.id);
+        let resul = await getMessageById(id);
+
+        var filename = JSON.parse(resul[0].message).savedName;
+
+        res.json({result: filename});
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500);
+    }
+}
+
+const get_group_file_info = async (req, res) => {
+
+    try {
+
+        let id = parseInt(req.query.id);
+        let data = await getGroupMessById(id);
+
+        // console.log(data);
+        let filename = JSON.parse(data[0].message).savedName;
+
+        res.json({result: filename});
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500);
     }
 
 }
@@ -891,6 +965,8 @@ module.exports = {
     delete_message, get_edit_message,
     edit_message, delete_group_mess,
     edit_group_mess, get_group_edit_mess,
-    post_file, post_file_group
+    post_file, post_file_group,
+    get_file, get_group_file,
+    get_file_info, get_group_file_info
 
 }   

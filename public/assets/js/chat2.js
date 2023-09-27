@@ -331,7 +331,7 @@ const addMember = async()=>{
         `<a href="#groupMemberProfile" data-bs-toggle="modal" class="list-group-item list-group-item-action fw-bolder" data-bs-dismiss="modal" onclick="show_member_profile(${owner.user_id})">
             <div class="d-flex">
                 <div class="user-img away  align-self-center me-4 ">
-                    <img src="public/assets/uploadImages/${owner.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                    <img src="public/assets/send/uploadImages/${owner.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
                 </div>
                 <div class="flex-1 overflow-hidden align-self-center">
                     <h5 class="text-truncate font-size-14 mb-1">${owner.account_name}</h5>
@@ -414,7 +414,7 @@ const updateGroupPhoto = async()=>{
     }else{
         console.log('Updated!');
         $('#groupPhoto').html('');
-        $('#groupPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail" style="width:130px; height:130px;" src="public/assets/groupImages/${response.photo}" alt="Card image">`);
+        $('#groupPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail" style="width:130px; height:130px;" src="public/assets/send/groupImages/${response.photo}" alt="Card image">`);
     }
 
 }
@@ -510,6 +510,13 @@ const sendFileModal = () => {
     $('#sendfile').html(name);
 }
 const send_file = async() => {
+
+    $('#sendfile').empty();
+    $('#sendfile').append(
+    `<button class="btn btn-primary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Sending...
+    </button>`);
     
     let to_user_id = $('#userId').html();
     let file = document.getElementById('shareFile').files[0];
@@ -525,16 +532,35 @@ const send_file = async() => {
     .then(response => response.result)
     .catch(err => {console.log(err);});
 
-    // if(result){
-    //     console.log('file joylandi');
-    // }
+    if(result){
+
+        $('#send_file_modal').modal('hide');
+        
+    }
 
 }
 
-const openFile = (id) => {
+const open_file = async() => {
 
-    let fileReader = new FileReader();
-    
+    let filename = sessionStorage.getItem('filename');
+    // console.log('ishlavotti');
+    await fetch('/get-chat-file?name='+filename)
+    .then(response => response.blob())
+    .then(blob =>{
+        console.log(blob);
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+
+        // console.log(url);
+
+        a.click();
+        a.remove();
+    })
+    .catch(err => {console.log(err);});
+
 }
 
 const sendFileModalGr = ()=>{
@@ -544,7 +570,7 @@ const sendFileModalGr = ()=>{
     let file = document.getElementById('shareFile').files[0];
     
     var name = file.name;
-    if(name.split(' ').length === 1 && name.length>30){
+    if( name.length>30){
         name = '...'+name.substring(name.length-30);
     }
     // console.log(file);
@@ -554,6 +580,13 @@ const sendFileModalGr = ()=>{
 }
 
 const send_file_gr = async() => {
+
+    $('#sendfilegr').empty();
+    $('#sendfilegr').append(
+    `<button class="btn btn-primary" type="button" disabled>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        Sending...
+    </button>`);
 
     let groupId = parseInt(document.getElementById('groupId').innerHTML);
 
@@ -571,8 +604,76 @@ const send_file_gr = async() => {
     .catch(err => {console.log(err);});
 
     if(result)
-        console.log('posted');
-    else 
-        console.log('failed');
+        $('#send_file_modal_gr').modal('hide');
+    else{
+        $('#send_file_modal_gr').modal('hide');
+        Swal.fire({
+            title: 'Failed!',
+            icon: 'danger',
+            showCancelButton: true,
+            cancelButtonText: 'OK',
+            cancelButtonClass: 'btn btn-success mt-2',
+            buttonsStyling: false
+        });
+    } 
+        
+
+}
+
+const openGroupFile = async() => {
+
+    let filename = sessionStorage.getItem('filenameGr');
+    
+    await fetch('get-group-file?name='+filename)
+    .then(response => response.blob())
+    .then(blob => {
+        
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        
+        a.click();
+        a.remove();
+
+    })
+    .catch(err => {console.log(err);});
+
+}
+
+///// show photo sent 
+
+const show_photo_sent = async(id) => {
+
+    let result = await fetch('/get-file-info?id='+id)
+    .then(response => response.json())
+    .then(response => response.result)
+    .catch(err =>{console.log(err);});
+
+    if(result){
+        $('#photoSent').empty();
+        $('#photoSent').append(`<img class="mb-0" src="public/assets/send/${result}" 
+        style="width: 100%; max-height:42rem;">`);
+    }
+
+    $('#see_photo_sent').modal('show');
+}
+
+const show_photo_sent_gr = async(id) => {
+
+    let result = await fetch('/get-group-file-info?id='+id)
+    .then(response => response.json())
+    .then(response => response.result)
+    .catch(err =>{console.log(err);});
+
+    if(result){
+        $('#photoSent').empty();
+        $('#photoSent').append(`<img class="mb-0" src="public/assets/send/sendGroup/${result}" 
+        style="width: 100%; max-height:42rem;">`);
+    }
+
+    $('#see_photo_sent').modal('show');
 
 }

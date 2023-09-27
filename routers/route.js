@@ -7,7 +7,7 @@ var multer = require('multer');
 
 var storage = multer.diskStorage({
       destination:(req, file, cb)=>{
-            cb(null, 'public/assets/uploadImages/')
+            cb(null, 'public/assets/send/uploadImages/')
       },
       filename:(req, file, cb)=>{
             // console.log(file);
@@ -17,7 +17,7 @@ var storage = multer.diskStorage({
 
 var storage2 = multer.diskStorage({
       destination:(req, file, cb)=>{
-            cb(null, 'public/assets/groupImages/');
+            cb(null, 'public/assets/send/groupImages/');
       },
       filename:(req, file, cb)=>{
             cb(null, Date.now()+path.extname(file.originalname));
@@ -119,5 +119,9 @@ module.exports = function (app) {
 
       app.post('/send-file', isUserAllowed, postFiles.single('file'), mainController.post_file);
       app.post('/send-file-group', isUserAllowed, postFilesGroup.single('file'), mainController.post_file_group);
+      app.get('/get-chat-file', isUserAllowed, mainController.get_file);
+      app.get('/get-group-file', isUserAllowed, mainController.get_group_file);
+      app.get('/get-file-info', isUserAllowed, mainController.get_file_info);
+      app.get('/get-group-file-info', isUserAllowed, mainController.get_group_file_info);
       
 }
