@@ -7,7 +7,7 @@
 
         <%- contentFor('body') %>
 
-            <div class="d-lg-flex mb-1 mt-0">
+            <div class="d-lg-flex mb-1 mt-0" style="min-height: 500px;">
                 <div class="chat-leftsidebar">
                     <div class="card-body border-bottom py-3">
                         <div class="search-box chat-search-box">
@@ -22,7 +22,7 @@
                         <div class="" id="chat">
                             <div>
                                 <h5 class="font-size-14 px-3 mb-3">Chats</h5>
-                                <div class="list-group myScroll" style="max-height: 500px; min-height: 500px; overflow: auto;"
+                                <div class="list-group myScroll" style="max-height: 486px; min-height: 486px; overflow: auto;"
                                     id="chatsGroup">
                                 </div>
                             </div>
@@ -34,7 +34,7 @@
                 <div class="w-100 user-chat mt-4 mt-sm-0">
                     <div class="p-3 px-lg-4 user-chat-border" style="background-color:lightgray;">
                         <div class="row">
-                            <div class="col-md-4 col-6" id="to_user">
+                            <div class="col-md-4 col-6" id="to_user" style="min-height: 45px;">
                             </div>
                             <div class="col-md-8 col-6">
                                 <ul class="list-inline user-chat-nav text-end mb-0">
@@ -87,7 +87,7 @@
 
                     <div class="px-lg-2">
                         <div class="chat-conversation p-3 myScroll"
-                            style="overflow-y: auto; max-height: 500px; min-height: 500px;" id="chat_area">
+                            style="overflow-y: auto; max-height: 486px; min-height: 486px;" id="chat_area">
                             <ul class="list-unstyled mb-0 pe-3" id="messageList">
                                 <h1 class="display-6" style="margin-top: 20%; text-align: center;">Chat messages will be
                                     displayed here after you start typing!</h1>
@@ -98,10 +98,10 @@
                     <div class="px-lg-3">
                         <div class="p-3 chat-input-section">
                             <form>
-                                <div class="row" id="enterMessage">
+                                <div class="row" id="enterMessage" style="height: 50px;">
                                 </div>
                             </form>
-                        </div>
+                     </div>
                     </div>
                 </div>
             </div>

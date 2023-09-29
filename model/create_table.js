@@ -12,7 +12,7 @@ const create_users = async ()=>{
         table.timestamp('create_time').defaultTo(knex.fn.now());
         table.string('delete_time').nullable();
         table.string('update_time').nullable();
-        // table.string('active_time').nullable();
+        table.string('active_time').nullable();
     });
     console.log('td_users created!');
 }

@@ -4,7 +4,7 @@ const { postMessages, getMessages, getUser, clearChat, getOnesTypedUser, getOnes
         updateAccountName, updateProfilePhoto, getAllUsers, createGroup, getMessagesUserRelated,
         getAllGroups, getGroupById, getGroupMessages, postGroupMessages, updateGroupUsers, deleteGroup,
         updateGroupPhoto, deleteUser, getGroupMember, deleteMessage, editMessage, delGroupMess, editGroupMess,
-        getGroupMessById, postFileMess, postFileGroup
+        getGroupMessById, postFileMess, postFileGroup, get_unreplied_user
 
 } = require('../model/crud');
 
@@ -67,8 +67,9 @@ const get_messages = async (req, res) => {
 const delete_message = async (req, res) => {
     try {
 
+        let user = req.session.user.user_id;
         let id = parseInt(req.query.id);
-        let result = await deleteMessage(id);
+        let result = await deleteMessage(id, user);
         res.json({result:result});
 
     } catch (error) {
@@ -93,9 +94,10 @@ const edit_message = async (req, res) =>{
 
     try {
 
+        let user = req.session.user.user_id;
         let id = parseInt(req.query.id);
         let mess = req.body.mess;
-        let resu = await editMessage(id, mess);
+        let resu = await editMessage(id, mess, user);
         res.json({result: resu});
         
     } catch (error) {
@@ -185,7 +187,8 @@ const get_chats = async (req, res) => {
                     account_name: getUserInfo[0].account_name,
                     profile_photo: getUserInfo[0].profile_photo,
                     message: message[0].message,
-                    create_time: message[0].create_time
+                    create_time: message[0].create_time,
+                    type:message[0].type
                 });
             }
 
@@ -269,7 +272,7 @@ const get_chats = async (req, res) => {
                     obj = {
                         user_id: getUserInfo.user_id,
                         account_name: "Deleted Account",
-                        profile_photo: "yellow.jpg"
+                        profile_photo: "yellow.jpg",
                     }
                 }else{
                     obj = {
@@ -282,7 +285,6 @@ const get_chats = async (req, res) => {
                 finalResult.push(obj);
             }
             // console.log('result = '+result);
-            // console.log('finalResult = '+finalResult);
         }
 
         if(finalResult.length > 0)
@@ -299,15 +301,20 @@ const get_chats = async (req, res) => {
 const start_chat = async (req, res) => {
 
     try {
-        var user_id = req.query.userId;
-        var user = await getGroupMember(user_id);
+
+        var curr_user = req.session.user.user_id;
+        var user_id = parseInt(req.query.userId);
+
+        var user = await get_unreplied_user(user_id, curr_user);
         user = user[0];
-    
+        // console.log(user);
+
         if(user.user_status === 0){
             user.account_name = "Deleted Account";
             user.profile_photo = 'yellow.jpg';
+            user.active_time = false;
         }
-        res.json(user);
+        res.json({result: user});
     } catch (error) {
         console.log(error);
     }
@@ -422,12 +429,13 @@ const create_group = async (req, res) => {
     // console.log(req.body.data);
     try {
 
+        let user = req.session.user.user_id;
         let data = {
             name: req.body.data.name,
             users: req.body.data.users,
             owner: req.session.user.user_id
         };
-        let datum = await createGroup(data);
+        let datum = await createGroup(data, user);
         if (datum)
             res.json({ data: true , result: datum});
         else
@@ -472,8 +480,9 @@ const get_group_by_id = async (req, res)=>{
 
     try {
 
+        let user = req.session.user.user_id;
         let id = parseInt(req.query.id);
-        let groupInfo = await getGroupById(id);
+        let groupInfo = await getGroupById(id, user);
 
         if(!groupInfo[0])
             return res.json({result: false});
@@ -655,9 +664,10 @@ const delete_group = async (req, res)=>{
 
     try {
 
+        let user = req.session.user.user_id;
         let groupId = parseInt(req.query.id);
     
-        let result = await deleteGroup(groupId);
+        let result = await deleteGroup(groupId, user);
         // console.log(result);
     
         res.json({result: result});
@@ -677,7 +687,7 @@ const get_users_to_add = async (req, res)=>{
         let groupId = parseInt(req.query.id);
         let current_user = req.session.user.user_id;
 
-        let groupInfo = await getGroupById(groupId);
+        let groupInfo = await getGroupById(groupId, current_user);
         
         var users = groupInfo[0].users;
         var owner = groupInfo[0].owner;
@@ -714,6 +724,7 @@ const add_users_to_group = async (req, res)=>{
 
     try {
 
+        let user = req.session.user.user_id;
         let newUsers = req.body.newUsers;
         // console.log(newUsers[0]);
 
@@ -728,7 +739,7 @@ const add_users_to_group = async (req, res)=>{
 
         // console.log('users = '+users);
 
-        var result = await updateGroupUsers(users, groupId);
+        var result = await updateGroupUsers(users, groupId, user);
         
         if(result)
             result = true;
@@ -775,10 +786,11 @@ const update_group_photo = async (req, res)=>{
 
     try {
 
+        let user = req.session.user.user_id;
         let groupId = parseInt(req.query.id);
         let photo = req.file.filename;
     
-        let result = await updateGroupPhoto(groupId, photo);
+        let result = await updateGroupPhoto(groupId, photo, user);
     
         if(result)
             result = true;
@@ -791,17 +803,19 @@ const update_group_photo = async (req, res)=>{
 }
 
 const delete_group_mess = async (req, res) => {
+    let user = req.session.user.user_id;
     let id = parseInt(req.query.id);
-    let resul = await delGroupMess(id);
+    let resul = await delGroupMess(id, user);
     res.json({result:resul});
 }
 
 const edit_group_mess = async (req, res) => {
     try {
 
+        let user = req.session.user.user_id;
         let id = parseInt(req.query.id);
         let mess = req.body.mess;
-        let resul = await editGroupMess(id, mess);
+        let resul = await editGroupMess(id, mess, user);
 
         res.json({result: resul});
         
@@ -948,6 +962,28 @@ const get_group_file_info = async (req, res) => {
 
 }
 
+const get_active_time = async (req, res) => {
+    
+    try {
+
+        let id = parseInt(req.query.id);
+
+        let user = await getUser(id);
+
+        if(!user[0])
+            return res.json({result:false});
+
+        let active = user[0].active_time;
+
+        res.json({result: active});
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500);
+    }
+
+}
+
 module.exports = {
     get_main_page, post_messages,
     get_messages, get_contacts,
@@ -967,6 +1003,7 @@ module.exports = {
     edit_group_mess, get_group_edit_mess,
     post_file, post_file_group,
     get_file, get_group_file,
-    get_file_info, get_group_file_info
+    get_file_info, get_group_file_info,
+    get_active_time
 
 }   

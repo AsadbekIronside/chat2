@@ -2,7 +2,7 @@ var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 ///////  crud user
 var { post_user, get_user, getAllPasswords, find_user_password, check_username_exists,
-     get_password} = require('../model/auth_crud');
+     get_password, update_active_time} = require('../model/auth_crud');
 
 const pages_login = (req, res)=>{
 	res.locals = { title: 'Login 1' };
@@ -56,6 +56,7 @@ const post_login = async(req, res)=>{
             let userData = await get_user(user_id);
                 sess = req.session;
                 sess.user = userData[0];
+                await update_active_time(userData[0].user_id);
                 res.redirect('/');
 
         } else {
@@ -94,10 +95,12 @@ const logout = (req, res)=>{
 }
 
 const page_unlock = async(req, res)=>{
+
     const password = await find_user_password(req.session.user.user_id);
     const result = await bcrypt.compare(req.body.password, password[0].password);
 
     if(result){
+        await update_active_time();
         res.redirect('/');
     }
     else{
@@ -142,6 +145,7 @@ const post_register =  async(req, res)=>{
                 // Assign value in session
                 sess = req.session;
                 sess.user = user[0];
+                await update_active_time(user[0].user_id);
                 res.redirect('/');
             }
             

@@ -241,9 +241,9 @@ async function addMessage(message, to_user_info) {
                        <div class="chat-avatar">
                            <img src="public/assets/send/uploadImages/${to_user_info.profile_photo}" alt="avatar-2">
                        </div>
-                       <div class="ctext-wrap">
+                       <div class="ctext-wrap" style="width:40%;">
                            <div class="conversation-name">${to_user_info.account_name}</div>
-                           <div class="ctext-wrap-content"  style="padding:0px; width:40%;">
+                           <div class="ctext-wrap-content"  style="padding:0px;">
                                 <a href="#" onclick="show_photo_sent(${message.message_id})">
                                     <img class="mb-0 img-thumbnail" src="public/assets/send/${JSON.parse(message.message).savedName}" 
                                     style="width:100%;">
@@ -463,6 +463,8 @@ const get_contacts = async () => {
 
 var myInterval = setInterval(() => { }, 10000);
 
+var activeTimeInterval = setInterval(()=>{}, 10000);
+
 const start_new_chat = async (userId) => {
 
     // console.log('This inside start_chat');
@@ -470,14 +472,81 @@ const start_new_chat = async (userId) => {
     clearInterval(myInterval);
 
     const response = await fetch('/start-chat?userId=' + userId)
-        .then(response => response.json());
+        .then(response => response.json())
+        .then(response => response.result)
+        .catch(err => {console.log(err);});
+
+    // console.log(response);
 
     const toUser = $('#to_user');
     toUser.html('');
 
-    const result =
+    var result;
+
+    if(!response.active_time){
+        result =
         `<h5 class="font-size-15 mb-1 text-truncate">${response.account_name}<p id="userId" hidden>${response.user_id}</p></h5>
-    <p class="text-truncate mb-0"><i class="mdi mdi-circle text-success align-middle me-1"></i> Active now</p>`;
+        <p class="text-truncate mb-0" id="activeTime"><i class="mdi mdi-circle text-success align-middle me-1"></i>a long time ago</p>`;
+        
+    }else{
+
+        // console.log('Inside else');
+
+        var active_time = parseInt(response.active_time);
+        var delta = Date.now() - active_time;
+        var resTime = '';
+    
+        if(delta >= 2*30*24*60*60*1000){
+            resTime += Math.trunc(delta / (30*24*60*60*1000))+" months ago";
+        }
+        else if(delta >= 30*24*60*60*1000){
+            resTime += "last month";
+        }
+        else if(delta >= 2*7*24*60*60*1000){
+            resTime += Math.trunc(delta / (7*24*60*60*1000))+" weeks ago";
+        }
+        else if(delta >= 7*24*60*60*1000){
+            resTime += "last week";
+        }
+        else if(delta >= 2*24*60*60*1000){
+            resTime += Math.trunc(delta / (24*60*60*1000))+" days ago";
+        }
+        else if(delta >= 24*60*60*1000){
+            resTime += "yesterday";
+        }else if(delta >= 2*60*60*1000){
+            resTime += Math.trunc(delta / (60*60*1000))+" hours ago";
+        }
+        else if(delta >= 60*60*1000){
+            resTime += 'an hour ago';
+        }
+        else if(delta >= 2*60*1000){
+            resTime += Math.trunc(delta / (60*1000))+" minutes ago";
+        }else{
+            resTime += "Active now";
+        }    
+
+        if(resTime !== "Active now"){
+
+            result =
+            `<h5 class="font-size-15 mb-1 text-truncate">${response.account_name}<p id="userId" hidden>${response.user_id}</p></h5>
+            <p class="text-truncate mb-0" id="activeTime"><i class="mdi mdi-circle text-warning align-middle me-1"></i>${resTime}</p>`;
+
+        }else{
+
+            result =
+            `<h5 class="font-size-15 mb-1 text-truncate">${response.account_name}<p id="userId" hidden>${response.user_id}</p></h5>
+            <p class="text-truncate mb-0" id="activeTime"><i class="mdi mdi-circle text-success align-middle me-1"></i>${resTime}</p>`;
+
+        }
+
+        clearInterval(activeTimeInterval);
+
+        activeTimeInterval = setInterval(async()=>{
+        await get_active_time(response.user_id);
+        }, 60000);
+    
+    }
+
     toUser.append(result);
 
     $('#messageList').html('');
@@ -502,7 +571,7 @@ const start_new_chat = async (userId) => {
 
     let chatTemp = 
     ` <a class="dropdown-item" href="#toUserProfile" data-bs-toggle="modal">View Profile</a>
-      <a class="dropdown-item" href="javascript:void(0);" onclick="clearChat2()">Clear chat</a>`;
+      <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="clearChat2()">Clear chat</a>`;
 
     $('#dropdownMenu').html('');
 
@@ -559,6 +628,68 @@ const start_new_chat = async (userId) => {
     });
 };
 
+// get active time 
+
+const get_active_time = async(id) => {
+
+    // console.log('get_active_time ishlavotti');
+    
+    let result = await fetch('/get-active-time?id='+id)
+    .then(response => response.json())
+    .then(response => response.result)
+    .catch(err => {console.log(err);});
+
+    if(!result){
+        $('#activeTime').html("a long time ago");
+        return;
+    }
+
+    // console.log(result);
+    var active_time = parseInt(result);
+    var delta = Date.now() - active_time;
+    var resTime = '';
+    console.log('delta = '+delta);
+
+    if(delta >= 2*30*24*60*60*1000){
+        resTime += Math.trunc(delta / (30*24*60*60*1000))+" months ago";
+    }
+    else if(delta >= 30*24*60*60*1000){
+        resTime += "last month";
+    }
+    else if(delta >= 2*7*24*60*60*1000){
+        resTime += Math.trunc(delta / (7*24*60*60*1000))+" weeks ago";
+    }
+    else if(delta >= 7*24*60*60*1000){
+        resTime += "last week";
+    }
+    else if(delta >= 2*24*60*60*1000){
+        resTime += Math.trunc(delta / (24*60*60*1000))+" days ago";
+    }
+    else if(delta >= 24*60*60*1000){
+        resTime += "yesterday";
+    }else if(delta >= 2*60*60*1000){
+        resTime += Math.trunc(delta / (60*60*1000))+" hours ago";
+    }
+    else if(delta >= 60*60*1000){
+        resTime += 'an hour ago';
+    }
+    else if(delta >= 2*60*1000){
+        resTime += Math.trunc(delta / (60*1000))+" minutes ago";
+    }else{
+        resTime += "Active now";
+    }
+
+    if(resTime !== "Active now"){
+
+        $('#activeTime').html(`<i class="mdi mdi-circle text-warning align-middle me-1"></i>${resTime}`);
+
+    }else{
+
+        $('#activeTime').html(`<i class="mdi mdi-circle text-success align-middle me-1"></i>${resTime}`);
+    }
+    // console.log('ishlavotti');
+
+}
 
 
 ///// live search contacts
@@ -666,7 +797,7 @@ const get_chats = async () => {
         .catch(err => {console.log(err);});
 
     if(data.data){
-        console.log(data);
+        // console.log(data);
         localStorage.removeItem('chats');
         localStorage.setItem('chats', JSON.stringify(data));
 
@@ -692,27 +823,106 @@ const start_chat = async (userId) => {
     clearInterval(myInterval);
 
     const response = await fetch('/start-chat?userId=' + userId)
-        .then(response => response.json());
+        .then(response => response.json())
+        .then(response => response.result)
+        .catch(err => {console.log(err);});
 
     const toUser = $('#to_user');
     toUser.html('');
 
-    const result =
+    // console.log(response);
+
+    var result;
+    var cardBody;
+
+    if(!response.active_time){
+        result =
         `<h5 class="font-size-15 mb-1 text-truncate">${response.account_name}<p id="userId" hidden>${response.user_id}</p></h5>
-    <p class="text-truncate mb-0"><i class="mdi mdi-circle text-success align-middle me-1"></i> Active now</p>`;
-    toUser.append(result);
+        <p class="text-truncate mb-0" id="activeTime"><i class="mdi mdi-circle text-dark align-middle me-1"></i>a long time ago</p>`;
+       
+        cardBody =
+           `<h5 class="card-title fw-bolder">Name:</h5>
+            <h6 class="card-text ">${response.account_name}</h6>
+            <p class="card-text"><small class="text-primary">a long time ago</small></p>`;
 
-    $('#messageList').html('');
+        $('#cardBody').html('');
+        $('#cardBody').append(cardBody);
 
-    const cardBody =
+    }else{
+
+        var active_time = parseInt(response.active_time);
+        var delta = Date.now() - active_time;
+        var resTime = '';
+    
+        if(delta >= 2*30*24*60*60*1000){
+            resTime += Math.trunc(delta / (30*24*60*60*1000))+" months ago";
+        }
+        else if(delta >= 30*24*60*60*1000){
+            resTime += "last month";
+        }
+        else if(delta >= 2*7*24*60*60*1000){
+            resTime += Math.trunc(delta / (7*24*60*60*1000))+" weeks ago";
+        }
+        else if(delta >= 7*24*60*60*1000){
+            resTime += "last week";
+        }
+        else if(delta >= 2*24*60*60*1000){
+            resTime += Math.trunc(delta / (24*60*60*1000))+" days ago";
+        }
+        else if(delta >= 24*60*60*1000){
+            resTime += "yesterday";
+        }else if(delta >= 2*60*60*1000){
+            resTime += Math.trunc(delta / (60*60*1000))+" hours ago";
+        }
+        else if(delta >= 60*60*1000){
+            resTime += 'an hour ago';
+        }
+        else if(delta >= 2*60*1000){
+            resTime += Math.trunc(delta / (60*1000))+" minutes ago";
+        }else{
+            resTime += "Active now";
+        }  
+
+        if(resTime !== "Active now"){
+
+            result =
+            `<h5 class="font-size-15 mb-1 text-truncate">${response.account_name}<p id="userId" hidden>${response.user_id}</p></h5>
+            <p class="text-truncate mb-0" id="activeTime"><i class="mdi mdi-circle text-warning align-middle me-1"></i>${resTime}</p>`;
+
+        }else{
+
+            result =
+            `<h5 class="font-size-15 mb-1 text-truncate">${response.account_name}<p id="userId" hidden>${response.user_id}</p></h5>
+            <p class="text-truncate mb-0" id="activeTime"><i class="mdi mdi-circle text-success align-middle me-1"></i>${resTime}</p>`;
+
+        }
+        clearInterval(activeTimeInterval);
+
+        activeTimeInterval = setInterval(async()=>{
+        await get_active_time(response.user_id);
+        }, 60000);
+
+        //user prfile
+        cardBody =
         `<h5 class="card-title fw-bolder">Name:</h5>
             <h6 class="card-text ">${response.account_name}</h6>
             <h5 class="card-title fw-bolder">Username:</h5>
             <p class="card-text ">@${response.username}</p>
-            <p class="card-text"><small class="text-primary">Active now</small></p>`;
+            <p class="card-text"><small class="text-primary">${resTime}</small></p>`;
 
-    $('#cardBody').html('');
-    $('#cardBody').append(cardBody);
+        $('#cardBody').html('');
+        $('#cardBody').append(cardBody);
+        
+        ////get messages
+        myInterval = setInterval(async () => {
+            await getMessages(userId);
+            // console.log('log ishlavotti');
+        }, 800);
+    }
+
+    toUser.append(result);
+
+    $('#messageList').html('');
 
     $('#toUserPhoto').html('');
     $('#toUserPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail" style="object-fit: cover; height:140px; width:140px" src="public/assets/send/uploadImages/${response.profile_photo}" alt="Card image">`);
@@ -722,7 +932,7 @@ const start_chat = async (userId) => {
 
     let chatTemp = 
     ` <a class="dropdown-item" href="#toUserProfile" data-bs-toggle="modal">View Profile</a>
-      <a class="dropdown-item" href="javascript:void(0);" onclick="clearChat2()">Clear chat</a>`;
+      <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="clearChat2()">Clear chat</a>`;
 
     $('#dropdownMenu').html('');
     $('#dropdownMenu').append(chatTemp);
@@ -760,10 +970,6 @@ const start_chat = async (userId) => {
 
 
     titleArray = [];
-    myInterval = setInterval(async () => {
-        await getMessages(userId);
-        // console.log('log ishlavotti');
-    }, 800);
 
 };
 
@@ -866,6 +1072,7 @@ const add_unreplied = async (user) => {
 
 }
 
+var notifNumber;
 const get_unreplied = async () => {
 
     $('#notifGroup').html('');
@@ -878,6 +1085,7 @@ const get_unreplied = async () => {
         response.forEach(user => add_unreplied(user));
         $('#notifGroup').append(resultUnrep);
         document.querySelector('.noti-dot').removeAttribute('hidden');
+        notifNumber = response.length;
     }
     else    
         document.querySelector('.noti-dot').setAttribute('hidden', true);
@@ -888,13 +1096,18 @@ $(document).ready(async () => {
 });
 
 const start_unreplied_chat = async (userId) => {
+
     await start_chat(userId);
 
     var child = document.getElementById('c' + userId);
     var fatherDiv = document.getElementById('notifGroup');
     fatherDiv.removeChild(child);
 
-    // await get_unreplied();
+    notifNumber --;
+
+    if(notifNumber === 0){
+        document.querySelector('.noti-dot').setAttribute('hidden', true);
+    }
 
 }
 
@@ -1226,32 +1439,47 @@ const start_new_group = async(id)=>{
     }
 
     if(owner){
-        membersTemp +=
-        `<a href="#groupMemberProfile" data-bs-toggle="modal" class="list-group-item list-group-item-action fw-bolder" data-bs-dismiss="modal" onclick="show_member_profile(${owner.user_id})">
-            <div class="d-flex">
-                <div class="user-img away  align-self-center me-4 ">
-                    <img src="public/assets/send/uploadImages/${owner.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+        if(owner.user_id === current_user){
+            let menuTemp =
+            `<a class="dropdown-item" href="#groupProfile" data-bs-toggle="modal"><i class="bi bi-info-circle align-middle fa-lg me-2"></i>View Group Info</a>
+             <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="delete_group()"><i class="bi bi-box-arrow-right align-middle fa-lg me-2"></i>Delete And Leave Group</a>`
+        
+            $('#dropdownMenu').html('');
+           $('#dropdownMenu').append(menuTemp);
+
+           membersTemp +=
+           `<a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="show_member_profile(${owner.user_id})" disabled>
+               <div class="d-flex">
+                   <div class="user-img away  align-self-center me-4 ">
+                       <img src="public/assets/send/uploadImages/${owner.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                   </div>
+                   <div class="flex-1 overflow-hidden align-self-center">
+                       <h5 class="text-truncate font-size-14 mb-1">${owner.account_name}</h5>
+                   </div>
+                   <div class="font-size-13 text-primary">Owner</div>
+               </div>
+             </a>`; 
+        }
+        else{
+            membersTemp +=
+            `<a href="#groupMemberProfile" data-bs-toggle="modal" class="list-group-item list-group-item-action fw-bolder" data-bs-dismiss="modal" onclick="show_member_profile(${owner.user_id})">
+                <div class="d-flex">
+                    <div class="user-img away  align-self-center me-4 ">
+                        <img src="public/assets/send/uploadImages/${owner.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                    </div>
+                    <div class="flex-1 overflow-hidden align-self-center">
+                        <h5 class="text-truncate font-size-14 mb-1">${owner.account_name}</h5>
+                    </div>
+                    <div class="font-size-13 text-primary">Owner</div>
                 </div>
-                <div class="flex-1 overflow-hidden align-self-center">
-                    <h5 class="text-truncate font-size-14 mb-1">${owner.account_name}</h5>
-                </div>
-                <div class="font-size-13 text-primary">Owner</div>
-            </div>
-          </a>`;    
-          if(owner.user_id === current_user){
-                let menuTemp =
-                `<a class="dropdown-item" href="#groupProfile" data-bs-toggle="modal"><i class="bi bi-info-circle align-middle fa-lg me-2"></i>View Group Info</a>
-                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="delete_group()"><i class="bi bi-box-arrow-right align-middle fa-lg me-2"></i>Delete And Leave Group</a>`
-            
-                $('#dropdownMenu').html('');
-            
-                $('#dropdownMenu').append(menuTemp);
-          }
+              </a>`;  
+        }  
+          
     }
 
     members.forEach((user)=>{
         // console.log('user = '+user);
-        add_members(user);
+        add_members(user, current_user);
     });
 
     $('#groupMembers').html('');
@@ -1305,19 +1533,34 @@ const start_new_group = async(id)=>{
 
 }
 
-const add_members = (user)=>{
+const add_members = (user, current_user)=>{
 
-    var temp = 
-    ` <a href="#groupMemberProfile" data-bs-toggle="modal" class="list-group-item list-group-item-action fw-bolder" data-bs-dismiss="modal" onclick="show_member_profile(${user.user_id})">
-            <div class="d-flex">
-                <div class="user-img away  align-self-center me-4 ">
-                    <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+    if(user.user_id === current_user){
+        var temp = 
+        ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="show_member_profile(${user.user_id})">
+                <div class="d-flex">
+                    <div class="user-img away  align-self-center me-4 ">
+                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                    </div>
+                    <div class="flex-1 overflow-hidden align-self-center">
+                        <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+                    </div>
                 </div>
-                <div class="flex-1 overflow-hidden align-self-center">
-                    <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+           </a>`;
+    }
+    else{
+        var temp = 
+        ` <a href="#groupMemberProfile" data-bs-toggle="modal" class="list-group-item list-group-item-action fw-bolder" data-bs-dismiss="modal" onclick="show_member_profile(${user.user_id})">
+                <div class="d-flex">
+                    <div class="user-img away  align-self-center me-4 ">
+                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                    </div>
+                    <div class="flex-1 overflow-hidden align-self-center">
+                        <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+                    </div>
                 </div>
-            </div>
-       </a>`;
+           </a>`;
+    }
 
     membersTemp+=temp;
 }
@@ -1335,7 +1578,29 @@ const show_member_profile = async(userId)=>{
         return;
     }
 
-    let userProfile =
+    var userProfile;
+
+    if(user.account_name === 'Deleted Account'){
+        userProfile =
+        `<div class="col-md-4">
+            <img class="card-img rounded-circle img-thumbnail" style="background-position: center; height: 130px; width: 130px; object-fit: cover;"
+            src="public/assets/send/uploadImages/${user.profile_photo}" alt="Card image" id="userProf">
+        </div>
+        <div class="col-md-8 mb-1">
+            <div class="card-body">
+                <h5 class="card-title fw-bolder">Name:</h5>
+                <h6 class="card-text " id="accountName">${user.account_name}</h6>
+            </div>
+        </div>
+        <hr>
+        <div>
+            <a href="javascript:void(0);" data-bs-dismiss="modal" style="font-weight:bolder; margin-left:36%" onclick="start_chat(${user.user_id})">
+               SEND MESSAGE
+            </a>
+        </div>`;
+    }
+    else {
+        userProfile =
         `<div class="col-md-4">
             <img class="card-img rounded-circle img-thumbnail" style="background-position: center; height: 130px; width: 130px; object-fit: cover;"
             src="public/assets/send/uploadImages/${user.profile_photo}" alt="Card image" id="userProf">
@@ -1354,6 +1619,9 @@ const show_member_profile = async(userId)=>{
                SEND MESSAGE
             </a>
         </div>`;
+    }
+
+
 
     $('#otaDiv').html('');
     $('#otaDiv').html(userProfile);
@@ -1534,7 +1802,7 @@ const add_group_messages = async(message, current_user_id)=>{
                             <div class="ctext-wrap-content" style="padding:0px;"> 
                                 <a href="#" onclick="show_photo_sent_gr(${message.id})">
                                         <img class="mb-0 img-thumbnail" src="public/assets/send/sendGroup/${JSON.parse(message.message).savedName}" 
-                                        style="100%;">
+                                        style="width:100%;">
                                 </a>
                                 <div class="btn-group dropstart" style="position:absolute; bottom:26px;">
                                         <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
@@ -1617,9 +1885,9 @@ const add_group_messages = async(message, current_user_id)=>{
                        <div class="chat-avatar">
                            <img src="public/assets/send/uploadImages/${message.profile_photo}" alt="avatar-2">
                        </div>
-                       <div class="ctext-wrap">
+                       <div class="ctext-wrap" style="width:40%;">
                            <div class="conversation-name">${message.account_name}</div>
-                           <div class="ctext-wrap-content"  style="padding:0px; width:40%;">
+                           <div class="ctext-wrap-content"  style="padding:0px;">
                                 <a href="#" onclick="show_photo_sent_gr(${message.id})">
                                     <img class="mb-0 img-thumbnail" src="public/assets/send/sendGroup/${JSON.parse(message.message).savedName}" 
                                     style="width:100%;">

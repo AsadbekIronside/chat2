@@ -6,14 +6,18 @@ const groupMessages = 'tb_group_messages';
 
 
 const deleteUser = async(userId)=>{
-    return await knex(users).update({user_status:0, delete_time:new Date()}).where('user_id', '=', userId);
+    return await knex(users).update({user_status:0, delete_time:new Date(), active_time: Date.now()}).where('user_id', '=', userId);
 }
 
 const postMessages = async (data) => {
-    await knex.raw(
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', data.from_user_id);
+
+    return await knex.raw(
         `INSERT INTO tb_messages(from_user_id, to_user_id, message, create_time)VALUES(${data.from_user_id}, 
         ${data.to_user_id}, "${data.message}", "${data.create_time}");`);
-    console.log('message posted');
+    
 }
 
 const getMessages = async (count, from_user_id, to_user_id) => {
@@ -33,12 +37,17 @@ const getMessagesUserRelated = async (current_user_id) => {
 }
 
 const getUser = async (user_id) => {
-    return await knex(users).select(['user_id', 'username', 'account_name', 'profile_photo'])
+
+    return await knex(users).select(['user_id', 'username', 'account_name', 'profile_photo', 'active_time'])
         .where('user_id', '=', user_id)
         .andWhere('user_status', '=', '1');
 }
 
 const clearChat = async (from_user_id, to_user_id) => {
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', from_user_id);
+
     return await knex(messages).update({ message_status: 0, delete_time: new Date() })
         .where(knex.raw(`((from_user_id=${from_user_id} AND to_user_id=${to_user_id}) OR (from_user_id=${to_user_id} AND to_user_id=${from_user_id}))`))
         .andWhere('message_status', '=', '1');
@@ -64,19 +73,27 @@ const getMessageById = async (id) => {
 }
 
 const updateAccountName = async (id, name) => {
-    return await knex(users).update({ account_name: name, update_time: new Date() }).where('user_id', '=', id);
+    return await knex(users).update({ account_name: name, update_time: new Date(), active_time:Date.now()}).where('user_id', '=', id);
 }
 
 const updateProfilePhoto = async (id, photo_name) => {
-    await knex(users).update({ profile_photo: photo_name, update_time: new Date() }).where('user_id', '=', id);
+    await knex(users).update({ profile_photo: photo_name, update_time: new Date(), active_time: Date.now()}).where('user_id', '=', id);
 }
 
 const getAllUsers = async (user_id) => {
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user_id);
+    
     return await knex(users).select(['user_id', 'username', 'account_name', 'profile_photo'])
         .where('user_status', '=', '1').andWhere('user_id', '<>', user_id);
 }
 
-const deleteMessage = async (id)=>{
+const deleteMessage = async (id, user)=>{
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(messages).update({message_status:0, delete_time: new Date()}).where('message_id', '=', id)
     .then(result => {
         return true;
@@ -87,7 +104,11 @@ const deleteMessage = async (id)=>{
     });
 }
 
-const editMessage = async (id, mess) => {
+const editMessage = async (id, mess, user) => {
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+    
     return await knex(messages).update({message: mess, update_time: new Date()})
     .where('message_id', '=', id)
     .then(result => true)
@@ -99,7 +120,11 @@ const editMessage = async (id, mess) => {
 
 //groups 
 
-const createGroup = async (group) => {
+const createGroup = async (group, user) => {
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(groups)
         .insert({
             name: group.name,
@@ -128,7 +153,11 @@ const getAllGroups = async ()=>{
     });
 }
 
-const getGroupById = async (id)=>{
+const getGroupById = async (id, user)=>{
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(groups).select(['id','name', 'owner', 'users', 'admins', 'photo'])
     .where('id', '=', id)
     .then(result =>{
@@ -157,6 +186,10 @@ const getGroupMessages = async(id, count)=>{
 }
 
 const postGroupMessages = async(user, group, message)=>{
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(groupMessages).insert({
         user:user,
         group:group,
@@ -173,7 +206,11 @@ const postGroupMessages = async(user, group, message)=>{
         
 }
 
-const updateGroupUsers = async(users, id)=>{
+const updateGroupUsers = async(users, id, user)=>{
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(groups).update({users:users, update_time: new Date()})
     .where('id', '=', id)
     .then(result =>{
@@ -185,7 +222,11 @@ const updateGroupUsers = async(users, id)=>{
     });
 }
 
-const deleteGroup = async(id)=>{
+const deleteGroup = async(id, user)=>{
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return knex(groups).update({status:0, delete_time: new Date(), owner:0})
     .where('id', '=', id)
     .then(result => {
@@ -197,7 +238,11 @@ const deleteGroup = async(id)=>{
     });
 }
 
-const updateGroupPhoto = async(id, photo)=>{
+const updateGroupPhoto = async(id, photo, user)=>{
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(groups).update({photo:photo, update_time:new Date()})
     .where('id', '=', id)
     .andWhere('status', '=', '1')
@@ -211,11 +256,25 @@ const updateGroupPhoto = async(id, photo)=>{
 }
 
 const getGroupMember = async (user_id) => {
-    return await knex(users).select(['user_id', 'username', 'account_name', 'profile_photo', 'user_status'])
+    return await knex(users).select(['user_id', 'username', 'account_name', 'profile_photo', 'user_status', 'active_time'])
         .where('user_id', '=', user_id);
 }
 
-const delGroupMess = async (id) => {
+const get_unreplied_user = async (user_id, curr_user) => {
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', curr_user);
+
+    return await knex(users).select(['user_id', 'username', 'account_name', 'profile_photo', 'user_status', 'active_time'])
+        .where('user_id', '=', user_id);
+}
+
+
+const delGroupMess = async (id, user) => {
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(groupMessages).update({status:0, delete_time: new Date()})
     .where('id', '=', id)
     .then(result => true)
@@ -225,7 +284,11 @@ const delGroupMess = async (id) => {
     });
 }
 
-const editGroupMess = async (id, mess) => {
+const editGroupMess = async (id, mess, user) => {
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(groupMessages).update({message: mess, update_time: new Date()})
     .where('id', '=', id)
     .then(result => true)
@@ -251,6 +314,10 @@ const getGroupMessById = async(id) => {
 ///files
 
 const postFileMess = async(from, to, mess, type)=>{
+
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', from);
+
     return await knex(messages).insert({
         from_user_id: from, 
         to_user_id:to,
@@ -267,6 +334,9 @@ const postFileMess = async(from, to, mess, type)=>{
 
 const postFileGroup = async(user, group, type, mess) => {
 
+    await knex(users).update({active_time: Date.now()})
+    .where('user_id', '=', user);
+
     return await knex(groupMessages).insert({
         user: user,
         group: group,
@@ -282,6 +352,8 @@ const postFileGroup = async(user, group, type, mess) => {
 
 }
 
+
+
 module.exports = {
     deleteUser, postMessages, getMessages,
     getMessagesUserRelated,getUser,
@@ -294,7 +366,7 @@ module.exports = {
     deleteGroup, updateGroupPhoto,
     getGroupMember,editMessage,
     delGroupMess, editGroupMess, getGroupMessById,
-    postFileMess, postFileGroup
+    postFileMess, postFileGroup, get_unreplied_user
 
 };
 

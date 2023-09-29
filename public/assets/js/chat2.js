@@ -677,3 +677,26 @@ const show_photo_sent_gr = async(id) => {
     $('#see_photo_sent').modal('show');
 
 }
+
+////////////// fullscreen
+
+const fullscreen = () => {
+
+    if($('#chat_area').css("min-height") === "486px"){
+        $('#chat_area').css("min-height", "565px");
+        $('#chatsGroup').css("min-height", "565px");
+    }
+    else{
+        $('#chat_area').css("min-height", "486px");
+        $('#chatsGroup').css("min-height", "486px");
+    }
+    
+}
+
+document.addEventListener('keypress', (event) => {
+    console.log('Ishlavotti');
+    // event.preventDefault();
+    // if(event.key === "F11"){
+    //     $('#fullScreen').click();
+    // }
+});

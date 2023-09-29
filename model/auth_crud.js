@@ -30,11 +30,17 @@ const find_user_password = async(user_id)=>{
     return await knex('tb_users').select('password').where('user_id', '=', user_id).andWhere('user_status', '=', '1');
 }
 
+const update_active_time = async(id) => {
+    return await knex('tb_users').update({active_time: Date.now()})
+    .where('user_id', '=', id);
+} 
+
 module.exports = {
     post_user,
     get_user,
     getAllPasswords,
     check_username_exists,
     find_user_password,
-    get_password
+    get_password,
+    update_active_time
 }
