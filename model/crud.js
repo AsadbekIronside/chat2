@@ -73,7 +73,12 @@ const getMessageById = async (id) => {
 }
 
 const updateAccountName = async (id, name) => {
-    return await knex(users).update({ account_name: name, update_time: new Date(), active_time:Date.now()}).where('user_id', '=', id);
+    return await knex(users).update({ account_name: name, update_time: new Date(), active_time:Date.now()}).where('user_id', '=', id)
+    .then(result => true)
+    .catch(err => {
+        console.log(err);
+        return false;
+    });
 }
 
 const updateProfilePhoto = async (id, photo_name) => {
@@ -206,12 +211,12 @@ const postGroupMessages = async(user, group, message)=>{
         
 }
 
-const updateGroupUsers = async(users, id, user)=>{
+const updateGroupUsers = async(mems, id, user)=>{
 
     await knex(users).update({active_time: Date.now()})
     .where('user_id', '=', user);
 
-    return await knex(groups).update({users:users, update_time: new Date()})
+    return await knex(groups).update({users:mems, update_time: new Date()})
     .where('id', '=', id)
     .then(result =>{
         return result;

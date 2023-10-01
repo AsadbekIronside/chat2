@@ -96,16 +96,23 @@ const logout = (req, res)=>{
 
 const page_unlock = async(req, res)=>{
 
-    const password = await find_user_password(req.session.user.user_id);
-    const result = await bcrypt.compare(req.body.password, password[0].password);
+    try {
 
-    if(result){
-        await update_active_time();
-        res.redirect('/');
-    }
-    else{
-        req.flash('error', 'Incorrect password! Please try again.');
-        res.redirect('/pages-lock-screen');
+        var id = req.session.user.user_id;
+        const password = await find_user_password(req.session.user.user_id);
+        const result = await bcrypt.compare(req.body.password, password[0].password);
+    
+        if(result){
+            await update_active_time(id);
+            res.redirect('/');
+        }
+        else{
+            req.flash('error', 'Incorrect password! Please try again.');
+            res.redirect('/pages-lock-screen');
+        }
+        
+    } catch (error) {
+        console.log(error);
     }
 }
 

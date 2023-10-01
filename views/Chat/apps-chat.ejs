@@ -2,6 +2,7 @@
     <!-- Sweet Alert-->
     <link href="public/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css" />
 
+
     <%- contentFor('breadcrumb') %>
 
 
@@ -9,7 +10,7 @@
 
             <div class="d-lg-flex mb-1 mt-0" style="min-height: 500px;">
                 <div class="chat-leftsidebar">
-                    <div class="card-body border-bottom py-3">
+                    <div class="card-body border-bottom padding-search"  style="border:1px solid green;">
                         <div class="search-box chat-search-box">
                             <div class="position-relative">
                                 <input type="text" class="form-control" placeholder="Search..." id="searchChats">
@@ -18,12 +19,11 @@
                         </div>
                     </div>
 
-                    <div class="py-4">
-                        <div class="" id="chat">
+                    <div class="py-3 py-md-4"  style="border:1px solid green;">
+                        <div class="chat" id="chat">
                             <div>
-                                <h5 class="font-size-14 px-3 mb-3">Chats</h5>
-                                <div class="list-group myScroll" style="max-height: 486px; min-height: 486px; overflow: auto;"
-                                    id="chatsGroup">
+                                <h5 class="font-size-14 px-3 mb-3" id="ChatTitle">Chats</h5>
+                                <div class="list-group myScroll list-group-custom" style="max-height: 486px; min-height: 486px; overflow-y: auto;" id="chatsGroup">
                                 </div>
                             </div>
                         </div>
@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="w-100 user-chat mt-4 mt-sm-0">
-                    <div class="p-3 px-lg-4 user-chat-border" style="background-color:lightgray;">
+                    <div class="px-4 py-2 p-sm-3 px-lg-4 user-chat-border" style="background-color:lightgray;">
                         <div class="row">
                             <div class="col-md-4 col-6" id="to_user" style="min-height: 45px;">
                             </div>
@@ -96,7 +96,7 @@
 
                     </div>
                     <div class="px-lg-3">
-                        <div class="p-3 chat-input-section">
+                        <div class="p-3 pb-0 chat-input-section">
                             <form>
                                 <div class="row" id="enterMessage" style="height: 50px;">
                                 </div>
@@ -165,9 +165,8 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                                     id="modal_close_contact"></button>
                             </div>
-                            <div class="modal-body myScroll"
-                                style="overflow-y: auto; max-height: 500px; scrollbar-width: thin;">
-                                <div class="list-group" id="modal_body_group">
+                            <div class="modal-body">
+                                <div class="list-group myScroll modal-height" id="modal_body_group" style="overflow-y: auto; max-height: 500px;">
                                 </div>
                             </div>
                         </div>
@@ -188,9 +187,9 @@
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="row no-gutters align-items-center border bg-white border-success">
-                                            <div class="col-md-4 " id="toUserPhoto">
+                                            <div class="col-12 col-sm-4" id="toUserPhoto">
                                             </div>
-                                            <div class="col-md-8">
+                                            <div class="col-12 col-sm-4">
                                                 <div class="card-body" id="cardBody">
                                                 </div>
                                             </div>
@@ -318,7 +317,7 @@
                                         id="modal_close_group"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="list-group myScroll" id="groupsBody" style="overflow-y: auto; max-height: 500px;">
+                                    <div class="list-group myScroll modal-height" id="groupsBody" style="overflow-y: auto; max-height: 500px;">
                                     </div>
                                 </div>
                                 <ul class="sub-menu list-unstyled mx-0 mt-0" aria-expanded="false">
@@ -335,7 +334,7 @@
 
                     <div class="modal fade" id="newgroup" data-bs-keyboard="false" tabindex="-1" role="dialog"
                         aria-hidden="true">
-                        <div class="modal-dialog" style="margin-top: 12%; width: 26%;" role="document">
+                        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
                             <div class="modal-content">
                                 <div class="modal-body"
                                     style="overflow-y: auto; max-height: 500px; scrollbar-width: thin;">
@@ -362,34 +361,31 @@
                     <!-- select contacts -->
                     <div class="modal fade" id="selectContacts" data-bs-keyboard="false" tabindex="-1" role="dialog"
                         aria-hidden="true">
-                        <div class="row">
-                            <div class="modal-dialog col-sm-6 col-lg-2 col-md-4 col-12" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h6 class="modal-title" style="color: darkgreen;">All Users</h6>
-                                        <form class="app-search d-lg-block ms-1">
-                                            <div class="position-relative">
-                                                <input type="text" class="form-control"
-                                                    placeholder="<%=translation.Search%>" id="searchContact">
-                                                <span class="ri-search-line"></span>
-                                            </div>
-                                        </form>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close" id="modal_close_contact"></button>
-                                    </div>
-                                    <div class="modal-body"
-                                        style="overflow-y: auto; max-height: 500px; scrollbar-width: thin;">
-                                        <div class="list-group" id="select_group_users">
+                        <div class="modal-dialog modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h6 class="modal-title" style="color: darkgreen;">All Users</h6>
+                                    <form class="app-search d-lg-block ms-1">
+                                        <div class="position-relative">
+                                            <input type="text" class="form-control"
+                                                placeholder="<%=translation.Search%>" id="searchContact">
+                                            <span class="ri-search-line"></span>
                                         </div>
+                                    </form>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close" id="modal_close_contact"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="list-group myScroll modal-height" id="select_group_users" style="overflow-y: auto; max-height: 500px;">
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" id="closeModalLast" class="btn btn-light waves-effect"
-                                            style="border: 0px; color: darkred; font-weight: bolder;"
-                                            data-bs-dismiss="modal">Cancel</button>
-                                        <button type="button" class="btn btn-light waves-effect waves-light"
-                                            style="border: 0px; color: darkgreen; font-weight: bolder;"
-                                            onclick="createGroup()" id="creategroup">Create</button>
-                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="closeModalLast" class="btn btn-light waves-effect"
+                                        style="border: 0px; color: darkred; font-weight: bolder;"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-light waves-effect waves-light"
+                                        style="border: 0px; color: darkgreen; font-weight: bolder;"
+                                        onclick="createGroup()" id="creategroup">Create</button>
                                 </div>
                             </div>
                         </div>
@@ -424,13 +420,17 @@
                                             </div>
                                             <hr>
                                             <div class="col-12 mb-2 ms-2">
-                                                <h6 class="mt-1">
-                                                    <i class="ri-group-line ri-lg me-3 ms-2"></i> MEMBERS
-                                                    <a href="#addUser" class="text-success" data-bs-toggle="modal"
-                                                        data-bs-dismiss="modal" onclick="getUsersToAdd()"><i
-                                                            class="bi bi-person-plus fa-2x"
-                                                            style="margin-left:60%;"></i></a>
-                                                </h6>
+                                                <div class="d-flex w-100">
+                                                    <div class="align-self-center me-4 ">
+                                                        <i class="ri-group-line ri-lg me-3 ms-2"></i> MEMBERS
+                                                    </div>
+                                                    <div class="flex-3" style="align-items: end;">
+                                                        <a href="#addUser" class="text-success" data-bs-toggle="modal" data-bs-dismiss="modal" 
+                                                            onclick="getUsersToAdd()">
+                                                            <i class="bi bi-person-plus fa-2x"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="list-group col-12 myScroll" style="max-height: 340px; overflow-y: scroll;" id="groupMembers">
                                             </div>
@@ -481,9 +481,8 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                     </div>
-                                    <div class="modal-body"
-                                        style="overflow-y: auto; max-height: 500px; scrollbar-width: thin;">
-                                        <div class="list-group" id="add_users_group">
+                                    <div class="modal-body">
+                                        <div class="list-group modal-height myScroll" id="add_users_group" style="overflow-y: auto; max-height: 500px;">
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -619,6 +618,29 @@
                         </div>
                     </div>
                     
+                    <!-- modal chats  -->
+                    <div class="modal fade" id="chats" data-bs-keyboard="false" tabindex="-1" role="dialog"
+                        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" style="color: darkgreen;" id="staticBackdropLabel">Chats</h5>
+                                    <form class="app-search d-lg-block ms-lg-5 ms-sm-2">
+                                        <div class="position-relative ms-4">
+                                            <input type="text" class="form-control" placeholder="<%=translation.Search%>" id="searchChatModal">
+                                            <span class="ri-search-line"></span>
+                                        </div>
+                                    </form>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                                        id="modal_close_chat"></button>
+                                </div>
+                                <div class="modal-body mb-4">
+                                    <div class="list-group myScroll modal-height" id="modal_chat_group" style="overflow-y: auto; max-height: 500px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>

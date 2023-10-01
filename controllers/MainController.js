@@ -406,8 +406,15 @@ const get_unreplied = async (req, res) => {
 }
 
 const update_account_name = async (req, res) => {
-    let result = await updateAccountName(req.session.user.user_id, req.body.name);
-    res.json({ ok: 'ok', result: result });
+    try {
+        let result = await updateAccountName(req.session.user.user_id, req.body.name);
+        res.json({ result: result });
+        // console.log(result);
+        
+    } catch (error) {
+        console.log(error);
+        res.json({result:false});
+    }
 }
 
 const update_profile_photo = async (req, res) => {
@@ -633,7 +640,7 @@ const leave_group = async (req, res)=>{
         let current_user = req.session.user.user_id;
         let groupId = parseInt(req.query.id);
         
-        let groupInfo = await getGroupById(groupId);
+        let groupInfo = await getGroupById(groupId,current_user);
         // console.log(groupInfo);
 
         let users = groupInfo[0].users;
@@ -646,7 +653,7 @@ const leave_group = async (req, res)=>{
         else
             users = users.substring(0, userIndex-1);
 
-        let result = await updateGroupUsers(users, groupId);
+        let result = await updateGroupUsers(users, groupId,current_user);
         
         if(!result)
             return res.json({result:false});
@@ -730,7 +737,7 @@ const add_users_to_group = async (req, res)=>{
 
         let groupId = parseInt(req.body.groupId);
         
-        let groupInfo = await getGroupById(groupId);
+        let groupInfo = await getGroupById(groupId, user);
 
         var users =groupInfo[0].users;
         newUsers.forEach((userId)=>{
@@ -756,8 +763,9 @@ const get_group_members_info = async (req, res)=>{
     
     try {
 
+        let curr_user = req.session.user.user_id;
         let groupId = parseInt(req.query.id);
-        let groupInfo = await getGroupById(groupId);
+        let groupInfo = await getGroupById(groupId, curr_user);
     
         let ownerInfo = await getUser(groupInfo[0].owner);
         var members = groupInfo[0].users.split(',');

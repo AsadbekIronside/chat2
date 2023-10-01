@@ -98,6 +98,11 @@ File: Main Css File
   padding: 5px 0px; }
   .megamenu-list li a {
     color: #505d69; }
+    .list-group{
+      max-height: 486px; 
+      min-height: 486px; 
+      overflow: auto;
+    }
 
 @media (max-width: 991px) {
   .navbar-brand-box {
@@ -220,6 +225,7 @@ body[data-sidebar="dark"] .logo-light {
       left: 10px !important; } }
 
 @media (max-width: 380px) {
+
   .navbar-brand-box {
     display: none; } }
 

@@ -1,9 +1,8 @@
-
 var titleArray = [];
 
-async function addMessage(message, to_user_info) {
+async function addMessage(message, to_user_info) {  
 
-    const time = new Date(message.create_time);
+    const time = new Date(parseInt(message.create_time));
     const currentdate = new Date();
     var hours = time.getHours();
     var minutes = time.getMinutes();
@@ -11,6 +10,7 @@ async function addMessage(message, to_user_info) {
     var days = time.getDate();
     var size, name;
     var filename;
+    // console.log(JSON.parse(message.message));
 
     if(message.type !== 'text'){
         size = parseInt(JSON.parse(message.message).size);
@@ -19,6 +19,7 @@ async function addMessage(message, to_user_info) {
         name = JSON.parse(message.message).name;
         if(name.split(' ').length === 1 && name.length>20){
             name = '...'+name.substring(name.length-20);
+            // console.log(name);
         }
 
         filename = JSON.parse(message.message).savedName;
@@ -138,12 +139,14 @@ async function addMessage(message, to_user_info) {
                                             </a>
                                         <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
                                             <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#editMessage" data-bs-toggle="modal"
-                                             onclick="edit_message(${message.message_id})"><i class="ri-pencil-fill"></i></a>
-                                            <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })"><i class="ri-delete-bin-7-fill"></i></a>
+                                             onclick="edit_message(${message.message_id})"><i class="ri-pencil-fill text-primary"></i></a>
+                                            <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })">
+                                            <i class="ri-delete-bin-7-fill text-danger"></i></a>
                                         </div>
                                     </div>
+                                    <p style="position:absolute; right:3px; top:50px;"><i class="ri-check-line ri-lg" style="text-align:end;"></i></p>
                                 </div>
-                                <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i> ${hours}:${minutes}</p>
+                                <p class="chat-time mb-0 ms-1">${hours}:${minutes}</p>
                                  
                             </div> 
                         </div>
@@ -154,26 +157,33 @@ async function addMessage(message, to_user_info) {
             temp +=
              ` <li class="right" id="message${message.message_id}">
                     <div class="conversation-list">
-                        <div class="ctext-wrap" style="width:40%; margin-left:60%;">
+                        <div class="ctext-wrap" style="width:50%; margin-left:50%;">
                             <div class="ctext-wrap-content" style="padding:0px;"> 
-                               <a href="#" onclick="show_photo_sent(${message.message_id})">
+                                <a href="#" onclick="show_photo_sent(${message.message_id})">
                                     <img class="mb-0 img-thumbnail" src="public/assets/send/${JSON.parse(message.message).savedName}" 
                                     style="width:100%; margin:0px;">
-                               </a>
+                                </a>
                                 <div class="btn-group dropstart" style="position:absolute; bottom:26px;">
                                         <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
-                                        <i class="ri-more-2-fill ri-lg"></i>
+                                          <i class="ri-more-2-fill ri-lg"></i>
                                         </a>
                                     <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
-                                        <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })"><i class="ri-delete-bin-7-fill"></i></a>
+                                        <a class="dropdown-item text-danger" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })"><i class="ri-delete-bin-7-fill"></i></a>
                                     </div>
                                 </div>
                             </div>
-                            <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i> ${hours}:${minutes}</p>
-                            
+                            <div class="row">
+                                <div class="col-6">
+                                <p class="chat-time mb-0 ms-1">${hours}:${minutes}</p>
+                                </div>
+                                <div class="col-6">
+                                    <p style="text-align:end; margin-top:4px; margin-right:2px"><i class="ri-check-line ri-lg"></i></p>
+                                </div>
                             </div>
-                        
+                          
                         </div>
+            
+                    </div>
                 </li>`;
 
         }else{
@@ -200,13 +210,15 @@ async function addMessage(message, to_user_info) {
                                        <i class="ri-more-2-fill ri-lg"></i>
                                        </a>
                                    <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
-                                       <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })"><i class="ri-delete-bin-7-fill"></i></a>
+                                       <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })">
+                                       <i class="ri-delete-bin-7-fill text-danger"></i></a>
                                    </div>
+                                   <p style="position:absolute; right:21px; top:30px;"><i class="ri-check-line ri-lg" style="text-align:end;"></i></p>
                                </div>
                        
                             </div>
                        </div>
-                       <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i> ${hours}:${minutes}</p>
+                       <p class="chat-time mb-0 ms-1">${hours}:${minutes}</p>
                        
                        </div>
                </li>`;
@@ -227,7 +239,7 @@ async function addMessage(message, to_user_info) {
                         <div class="ctext-wrap-content">
                             <p class="mb-0">${message.message}</p>
                         </div>
-                        <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i>${hours}:${minutes}</p>
+                        <p class="chat-time mb-0">${hours}:${minutes}</p>
                     </div>
                     
                 </div>
@@ -241,7 +253,7 @@ async function addMessage(message, to_user_info) {
                        <div class="chat-avatar">
                            <img src="public/assets/send/uploadImages/${to_user_info.profile_photo}" alt="avatar-2">
                        </div>
-                       <div class="ctext-wrap" style="width:40%;">
+                       <div class="ctext-wrap" style="width:50%;">
                            <div class="conversation-name">${to_user_info.account_name}</div>
                            <div class="ctext-wrap-content"  style="padding:0px;">
                                 <a href="#" onclick="show_photo_sent(${message.message_id})">
@@ -249,7 +261,7 @@ async function addMessage(message, to_user_info) {
                                     style="width:100%;">
                                 </a>
                            </div>
-                           <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i>${hours}:${minutes}</p>
+                           <p class="chat-time mb-0">${hours}:${minutes}</p>
                        </div>
                        
                    </div>
@@ -276,7 +288,7 @@ async function addMessage(message, to_user_info) {
                                 <small class="fw-bolder text-primary text-white">${size}</small>
                             </div>
                          </div>
-                        <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i>${hours}:${minutes}</p>
+                        <p class="chat-time mb-0">${hours}:${minutes}</p>
                     </div>
                     
                 </div>
@@ -291,7 +303,7 @@ async function addMessage(message, to_user_info) {
 async function sendMessage() {
     const mess = document.getElementById('message').value;
     const toUserId = document.getElementById('userId').innerHTML;
-    const time = new Date();
+    const time = Date.now();
 
     // console.log(toUserId);
 
@@ -343,14 +355,22 @@ const delete_message = async(id) => {
     if(result){
         $('#message'+id).remove();
         Swal.fire({
+            position:'top-end',
             title: 'Deleted!',
-            icon: 'success'
+            icon: 'success',
+            showConfirmButton:false,
+            timer:1500,
+            customClass:'swal-class'
           });
     }else{
         Swal.fire({
+            position:'top-end',
             title: 'Failed!',
             text: 'Unknown error occured.',
-            icon: 'error'
+            icon: 'error',
+            showCancelButton:false,
+            timer:1500,
+            customClass:'swal-class'
           })
     }
     
@@ -384,15 +404,23 @@ const edit_message = async (id) => {
 
                 if(result){
                     Swal.fire({
+                        position:'top-end',
                         title: 'Edited!',
-                        icon: 'success'
+                        icon: 'success',
+                        showConfirmButton:false,
+                        timer:1500,
+                        customClass:'swal-class'
                       });
                       $('#mess'+mess.message_id).html(message);
                 }else{
                     Swal.fire({
+                        position:'top-end',
                         title: 'Failed!',
                         text: 'Unknown error occured.',
-                        icon: 'error'
+                        showConfirmButton:false,
+                        icon: 'error',
+                        timer:1500,
+                        customClass:'swal-class2'
                       })
                 }
 
@@ -427,21 +455,19 @@ var result;
 
 const add_contacts = async (user) => {
     const contactTemp =
-        `<a href="javascript: void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_new_chat(${user.user_id})" 
-            id="a${user.user_id}">
-                <div class="card m-0">
-                <div class="row no-gutters align-items-center">
-                    <div class="col-5 col-sm-4">
-                    <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle ms-3" style="height:80px; width:80px;">
-                    </div>
-                    <div class="col-7 col-sm-8">
-                        <div class="card-body">
-                        <h6 class="fw-bolder">${user.account_name}</h6><small class="fw-bolder text-primary">@${user.username}</small>
+         ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" onclick="start_new_chat(${user.user_id})"
+          id="a${user.user_id}">
+                    <div class="d-flex">
+                        <div class="user-img away align-self-center" style="margin-right:50px;">
+                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs img-chats"
+                             alt="avatar-3" style="height:65px!important; width:65px!important;">
+                        </div>
+                        <div class="flex-1 overflow-hidden align-self-center">
+                            <h3 class="text-truncate font-size-15 mb-1">${user.account_name}</h3>
+                            <p class="mb-0 text-primary font-size-13">@${user.username}</p>
                         </div>
                     </div>
-                </div>
-                </div>
-         </a> `;
+            </a>`;
 
     result += contactTemp;
 }
@@ -724,25 +750,50 @@ var resultChat;
 
 const add_chats = async (user) => {
 
-    var now = new Date();
-    var time = new Date(user.create_time);
-    var resultTime;
+    var now = Date.now();
+    var time = parseInt(user.create_time);
+    var resultTime = '';
+    var delta = now-time;
     // console.log(user);
-    if (now.getDate() - time.getDate() > 0)
-        resultTime = now.getDate() - time.getDate() + '  days ago';
-    else if (now.getHours() - time.getHours() > 0)
-        resultTime = now.getHours() - time.getHours() + ' hours ago';
-    else
-        resultTime = now.getMinutes() - time.getMinutes() + ' minutes ago';
+    
+    if(delta >= 2*30*24*60*60*1000){
+        resultTime += Math.trunc(delta / (30*24*60*60*1000))+" months ago";
+    }
+    else if(delta >= 30*24*60*60*1000){
+        resultTime += "a month ago";
+    }
+    else if(delta >= 2*7*24*60*60*1000){
+        resultTime += Math.trunc(delta / (7*24*60*60*1000))+" weeks ago";
+    }
+    else if(delta >= 7*24*60*60*1000){
+        resultTime += "a week ago";
+    }
+    else if(delta >= 2*24*60*60*1000){
+        resultTime += Math.trunc(delta / (24*60*60*1000))+" days ago";
+    }
+    else if(delta >= 24*60*60*1000){
+        resultTime += "yesterday";
+    }else if(delta >= 2*60*60*1000){
+        resultTime += Math.trunc(delta / (60*60*1000))+" hours ago";
+    }
+    else if(delta >= 60*60*1000){
+        resultTime += 'an hour ago';
+    }
+    else if(delta >= 60*1000){
+        resultTime += Math.trunc(delta / (60*1000))+" minutes ago";
+    }else{
+        resultTime += "now";
+    }
 
     if(user.message ){
 
         if(user.type === 'text'){
             var contactTemp =
-            ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_chat(${user.user_id})" id="b${user.user_id}">
+            ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats"
+              onclick="start_chat(${user.user_id})" id="b${user.user_id}" >
                     <div class="d-flex">
-                        <div class="user-img away  align-self-center me-4 ">
-                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                        <div class="user-img away align-self-center me-4 ">
+                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs img-chats" alt="avatar-3" style="height:50px;width:50px;">
                         </div>
                         <div class="flex-1 overflow-hidden align-self-center">
                             <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
@@ -757,10 +808,11 @@ const add_chats = async (user) => {
                 name = '...'+name.substring(name.length-20);
             }
             var contactTemp =
-            ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_chat(${user.user_id})" id="b${user.user_id}">
+            ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" 
+               onclick="start_chat(${user.user_id})" id="b${user.user_id}">
                     <div class="d-flex">
                         <div class="user-img away  align-self-center me-4 ">
-                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs img-chats" alt="avatar-3" style="height:50px;width:50px;">
                         </div>
                         <div class="flex-1 overflow-hidden align-self-center">
                             <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
@@ -774,10 +826,11 @@ const add_chats = async (user) => {
     }else{
 
         var contactTemp =
-        ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_chat(${user.user_id})" id="b${user.user_id}">
+        ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" 
+           onclick="start_chat(${user.user_id})" id="b${user.user_id}">
                 <div class="d-flex">
-                    <div class="user-img away  align-self-center me-4 ">
-                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:50px;width:50px;">
+                    <div class="user-img away align-self-center me-4 ">
+                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs img-chats" alt="avatar-3" style="height:50px;width:50px;">
                     </div>
                     <div class="flex-1 overflow-hidden align-self-center">
                         <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
@@ -807,6 +860,31 @@ const get_chats = async () => {
         $('#chatsGroup').html('');
         $('#chatsGroup').append(resultChat);
     }
+       
+    $('#searchChats').keyup(async function (e) { 
+
+        var val = document.getElementById('searchChats').value;
+
+        // console.log('val = ' + val);
+        if(!val)
+            await get_chats();
+    
+        let chats = localStorage.getItem('chats');
+        chats = JSON.parse(chats).chats;
+        // console.log(chats);
+     
+        for(let i=0; i < chats.length; i++){
+            if (!chats[i].account_name.toLowerCase().includes(val.toLowerCase())) {
+                // console.log(user);
+                childNode = document.getElementById('b' + chats[i].user_id);
+                document.getElementById('chatsGroup').removeChild(childNode);
+                chats.splice(i, 1);
+                localStorage.removeItem('chats');
+                localStorage.setItem('chats', JSON.stringify({chats: chats}));
+            }
+        }
+    
+    });
 }
 
 // (get_chats)();
@@ -838,7 +916,7 @@ const start_chat = async (userId) => {
     if(!response.active_time){
         result =
         `<h5 class="font-size-15 mb-1 text-truncate">${response.account_name}<p id="userId" hidden>${response.user_id}</p></h5>
-        <p class="text-truncate mb-0" id="activeTime"><i class="mdi mdi-circle text-dark align-middle me-1"></i>a long time ago</p>`;
+         <p class="text-truncate mb-0" id="activeTime"><i class="mdi mdi-circle text-dark align-middle me-1"></i>a long time ago</p>`;
        
         cardBody =
            `<h5 class="card-title fw-bolder">Name:</h5>
@@ -925,7 +1003,7 @@ const start_chat = async (userId) => {
     $('#messageList').html('');
 
     $('#toUserPhoto').html('');
-    $('#toUserPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail" style="object-fit: cover; height:140px; width:140px" src="public/assets/send/uploadImages/${response.profile_photo}" alt="Card image">`);
+    $('#toUserPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail to-user-photo" style="height:140px; width:140px" src="public/assets/send/uploadImages/${response.profile_photo}" alt="Card image">`);
 
     document.getElementById('search').removeAttribute('hidden');
     document.getElementById('params').removeAttribute('hidden');
@@ -943,7 +1021,7 @@ const start_chat = async (userId) => {
                 <div class="position-relative">
                     <label class="form-label" for="shareFile">
                         <i class="ri-attachment-2 ri-2x align-middle"></i>
-                        <input class="form-control" type="file" id="shareFile" hidden required onchange="sendFileModal()">
+                        <input class="form-control" type="file" id="shareFile" onchange="sendFileModal()" hidden required >
                     </label>      
                 </div>
             </div>
@@ -968,36 +1046,15 @@ const start_chat = async (userId) => {
         }
     });
 
-
     titleArray = [];
+    if($('#ChatTitle').html() === 'Groups'){
+
+        document.getElementById('searchGroupChat').outerHTML = `<input type="text" class="form-control" placeholder="Search..." id="searchChats">`;
+        await get_chats();
+        $('#ChatTitle').html('Chats');
+    }
 
 };
-
-////  search chats
-
-document.getElementById('searchChats').addEventListener('keyup', async() => {
-    var val = document.getElementById('searchChats').value;
-
-    // console.log('val = ' + val);
-    if(!val)
-        await get_chats();
-
-    let chats = localStorage.getItem('chats');
-    chats = JSON.parse(chats).chats;
-    // console.log(chats);
- 
-    for(let i=0; i < chats.length; i++){
-        if (!chats[i].account_name.toLowerCase().includes(val.toLowerCase())) {
-            // console.log(user);
-            childNode = document.getElementById('b' + chats[i].user_id);
-            document.getElementById('chatsGroup').removeChild(childNode);
-            chats.splice(i, 1);
-            localStorage.removeItem('chats');
-            localStorage.setItem('chats', JSON.stringify({chats: chats}));
-        }
-    }
-});
-
 
 //alerts
 
@@ -1017,16 +1074,40 @@ var resultUnrep;
 
 const add_unreplied = async (user) => {
 
-    var now = new Date();
-    var time = new Date(user.create_time);
-    var resultTime;
+    var now = Date.now();
+    var time = parseInt(user.create_time);
+    var resultTime = '';
+    var delta = now-time;
     // console.log(user);
-    if (now.getDate() - time.getDate() > 0)
-        resultTime = now.getDate() - time.getDate() + ' days ago';
-    else if (now.getHours() - time.getHours() > 0)
-        resultTime = now.getHours() - time.getHours() + ' hours ago';
-    else
-        resultTime = now.getMinutes() - time.getMinutes() + ' minutes ago';
+    
+    if(delta >= 2*30*24*60*60*1000){
+        resultTime += Math.trunc(delta / (30*24*60*60*1000))+" months ago";
+    }
+    else if(delta >= 30*24*60*60*1000){
+        resultTime += "a month ago";
+    }
+    else if(delta >= 2*7*24*60*60*1000){
+        resultTime += Math.trunc(delta / (7*24*60*60*1000))+" weeks ago";
+    }
+    else if(delta >= 7*24*60*60*1000){
+        resultTime += "a week ago";
+    }
+    else if(delta >= 2*24*60*60*1000){
+        resultTime += Math.trunc(delta / (24*60*60*1000))+" days ago";
+    }
+    else if(delta >= 24*60*60*1000){
+        resultTime += "yesterday";
+    }else if(delta >= 2*60*60*1000){
+        resultTime += Math.trunc(delta / (60*60*1000))+" hours ago";
+    }
+    else if(delta >= 60*60*1000){
+        resultTime += 'an hour ago';
+    }
+    else if(delta >= 60*1000){
+        resultTime += Math.trunc(delta / (60*1000))+" minutes ago";
+    }else{
+        resultTime += "now";
+    }
 
     if(user.type === 'text'){
         var unrepliedTemp =
@@ -1132,9 +1213,31 @@ document.getElementById('saveName').addEventListener('click', async () => {
             mode: 'cors',
             headers: { "Content-type": "application/json; charset=UTF-8" },
             body: JSON.stringify({ name: val })
-        }).then(response => response.json());
-        document.getElementById('accountName').innerHTML = val;
-        document.getElementById('topRigthName').innerHTML = val;
+        })
+        .then(response => response.json())
+        .then(response => {
+            if(response.result){
+                document.getElementById('accountName').innerHTML = val;
+                document.getElementById('topRigthName').innerHTML = val;
+                Swal.fire({
+                    position:'top-end',
+                    showConfirmButton:false,
+                    title:'Changed!',
+                    icon:'success',
+                    timer:1500,
+                    customClass:'swal-class'
+                });
+            }else {
+                Swal.fire({
+                    position:'top-end',
+                    showConfirmButton:false,
+                    icon:'error',
+                    title:'Some error occured!',
+                    timer:1500,
+                    customClass:'swal-class2'
+                })
+            }
+        });
     }
 });
 
@@ -1147,11 +1250,11 @@ const show_user_profile = async () => {
         .then(response => response.result);
 
     let userProfile =
-        ` <div class="col-md-4">
-            <img class="card-img rounded-circle img-thumbnail" style="background-position: center; height: 140px; width: 140px; object-fit: cover;"
+        ` <div class="col-sm-4">
+            <img class="card-img rounded-circle img-thumbnail to-user-photo" style="height: 140px; width: 140px;"
             src="public/assets/send/uploadImages/${user.profile_photo}" alt="Card image" id="userProf">
         </div>
-        <div class="col-md-8">
+        <div class="col-sm-8">
             <div class="card-body">
                 <h5 class="card-title fw-bolder">Name:</h5>
                 <h6 class="card-text " id="accountName">${user.account_name}</h6>
@@ -1189,9 +1292,30 @@ const updatePhoto = async () => {
     })
     .then(response => response.json())
     .then(response => {
-        document.getElementById('userProf').setAttribute('src', `public/assets/send/uploadImages/${response.result}`);
-        document.getElementById('topRightPhoto').setAttribute('src', `public/assets/send/uploadImages/${response.result}`);
-        document.getElementById('btnClosePhoto').click();
+        if(response){
+            Swal.fire({
+                position:'top-end',
+                title:'Photo changed!',
+                showConfirmButton:false,
+                icon:'success',
+                timer:1700,
+                customClass:'swal-class'
+            });
+            document.getElementById('userProf').setAttribute('src', `public/assets/send/uploadImages/${response.result}`);
+            document.getElementById('topRightPhoto').setAttribute('src', `public/assets/send/uploadImages/${response.result}`);
+            document.getElementById('btnClosePhoto').click();
+
+        }else{
+            Swal.fire({
+                position:'top-end',
+                title:'Some error occured!',
+                showConfirmButton:false,
+                icon:'error',
+                timer:1700,
+                customClass:'swal-class'
+            })
+        }
+
     });
 
 }
@@ -1256,23 +1380,30 @@ const getAllUsers = async () => {
 
 const addAllUsers = (user) => {
     let usersTemp =
-        `<div class="form-check mb-3" id="form${user.user_id}">
-            <input class="form-check-input" type="checkbox" id="formCheck${user.user_id}">
-            <label class="form-check-label ms-2" for="formCheck${user.user_id}">
+        `<div class="form-check my-0 ps-3 pe-1 py-2" id="form${user.user_id}" style="height:7rem">
+            <label class="form-check-label ms-2" for="formCheck${user.user_id}" style="width:95%!important;" onclick="input_checked(${user.user_id})">
+            <input class="form-check-input" type="checkbox" id="formCheck${user.user_id}" style="margin-top:14px" hidden>
                 <div class="d-flex">
                     <div class="user-img away align-self-center me-4">
-                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3" style="height:30px;width:30px;">
+                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3 ms-2"
+                         style="height:45px;width:45px;">
                     </div>
                     <div class="flex-1 align-self-center me-4">
                         <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
-                        <p class="text-truncate mb-0 text-primary">@${user.username}</p>
+                        <p class="text-truncate mb-0 font-size-12 text-primary">@${user.username}</p>
                     </div>
                 </div>
             </label>
          </div>`
     resultAllUser += usersTemp;
 }
-
+const input_checked = (id) => {
+    if(document.getElementById('formCheck' + id).checked){
+        $('#form'+id).css({'border':'1px solid blue', 'opacity':'0.5'});
+    }
+    else    
+        $('#form'+id).css({'background-color':'white', 'border':'0px', 'opacity':'1'});
+}
 const createGroup = async () => {
 
     let result = '';
@@ -1331,21 +1462,18 @@ const add_groups = (group)=>{
     // console.log('group = '+group.id);
 
     const groupTemp =
-        `<a href="javascript: void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_new_group(${group.id})" 
-            id="g${group.id}">
-                <div class="card m-0">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col-5 col-sm-4">
-                        <img src="public/assets/send/groupImages/${group.photo}" class="rounded-circle img-thumbnail ms-3" style="height:80px; width:80px">
-                        </div>
-                        <div class="col-7 col-sm-8">
-                            <div class="card-body">
-                            <h6 class="fw-bolder">${group.name}</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-         </a> `;
+        `<a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" onclick="start_new_group(${group.id})" 
+         id="g${group.id}">
+                   <div class="d-flex">
+                       <div class="user-img away align-self-center" style="margin-right:50px;">
+                           <img src="public/assets/send/groupImages/${group.photo}" class="rounded-circle avatar-xs img-chats"
+                            alt="avatar-3" style="height:65px!important; width:65px!important; border:1px solid lightblue;">
+                       </div>
+                       <div class="flex-1 overflow-hidden align-self-center">
+                           <h3 class="text-truncate font-size-15 mb-1">${group.name}</h3>
+                       </div>
+                   </div>
+         </a>`;
 
     groupResult+=groupTemp;
 }
@@ -1375,6 +1503,7 @@ $('#searchGroup').keyup(async function (e) {
 });
 
 var membersTemp;
+var groupResultChat;
 
 const start_new_group = async(id)=>{
 
@@ -1395,9 +1524,6 @@ const start_new_group = async(id)=>{
 
     $('#to_user').html('');
     $('#to_user').html(groupProfile);
-    document.getElementById('modal_close_group').click();
-    document.getElementById('params').removeAttribute('hidden');
-    document.getElementById('search').removeAttribute('hidden');
 
     let menuTemp =
     ` <a class="dropdown-item" href="#groupProfile" data-bs-toggle="modal"><i class="bi bi-info-circle align-middle fa-lg me-2"></i>View Group Info</a>
@@ -1519,9 +1645,44 @@ const start_new_group = async(id)=>{
 
     $('#messageList').html('');
 
+    // console.log($('#ChatTitle').outerHTML);
+    if($('#ChatTitle').html() === 'Chats'){
+        await get_groups_chat();
+        $('#ChatTitle').html('Groups');
+
+        document.getElementById('searchChats').outerHTML = `<input type="text" class="form-control" placeholder="Search..." id="searchGroupChat">`;
+        
+        $('#searchGroupChat').keyup(async function (e) { 
+
+            var groups = JSON.parse(sessionStorage.getItem('groups_chat')).groups;
+            var val = $('#searchGroupChat').val();
+            $('#searchGroupChat').html('');
+        
+            if(!val){
+                await get_groups_chat();
+                return;
+            }
+        
+            // console.log('val = '+val);
+            for(let i = 0; i < groups.length; i++){
+                if(!groups[i].name.toLowerCase().includes(val.toLowerCase())){
+        
+                    $('#gc'+groups[i].id).remove();
+                    groups.splice(i, 1);
+                    sessionStorage.removeItem('groups_chat');
+                    sessionStorage.setItem('groups_chat', JSON.stringify({groups: groups}));
+                }
+            }
+        
+        });
+    }
+
+    document.getElementById('params').removeAttribute('hidden');
+    document.getElementById('search').removeAttribute('hidden');
+    document.getElementById('modal_close_group').click();
+
     // cursor
     // $('#messageGroup').focus();
-
     titleArray = [];
 
     let grId = group.id;
@@ -1531,6 +1692,50 @@ const start_new_group = async(id)=>{
         await get_group_messages(grId);
     }, 1000);
 
+
+}
+
+const get_groups_chat = async()=>{
+    groupResultChat = '';
+    const result = await fetch('/get-groups')
+    .then(response => response.json())
+    .then(response => response.result)
+    .catch(err => {console.log(err);});
+
+    if(!result){
+        console.log("groups: "+result);
+        return;
+    }
+
+    sessionStorage.removeItem('groups_chat');
+    sessionStorage.setItem('groups_chat', JSON.stringify({groups:result}));
+    // console.log('groups = '+result);
+    result.forEach((group)=>{
+        add_groups_chat(group);
+    });
+
+    $('#chatsGroup').html('');
+    $('#chatsGroup').append(groupResultChat);
+
+}
+/// ad groups chat
+
+const add_groups_chat = (group)=> {
+    const groupTemp =
+    `<a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" onclick="start_new_group(${group.id})" 
+     id="gc${group.id}">
+               <div class="d-flex">
+                   <div class="user-img away align-self-center me-4"">
+                       <img src="public/assets/send/groupImages/${group.photo}" class="rounded-circle avatar-xs img-chats"
+                        alt="avatar-3" style="height:50px!important; width:50px!important; border:1px solid lightblue;">
+                   </div>
+                   <div class="flex-1 overflow-hidden align-self-center">
+                       <h3 class="text-truncate font-size-15 mb-1">${group.name}</h3>
+                   </div>
+               </div>
+     </a>`;
+
+    groupResultChat+=groupTemp;
 }
 
 const add_members = (user, current_user)=>{
@@ -1780,14 +1985,15 @@ const add_group_messages = async(message, current_user_id)=>{
                                             <i class="ri-more-2-fill ri-lg"></i>
                                             </a>
                                         <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
-                                            <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#editMessage" data-bs-toggle="modal"
-                                             onclick="edit_group_message(${message.id})"><i class="ri-pencil-fill"></i></a>
+                                            <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#editGrMessage" data-bs-toggle="modal"
+                                             onclick="edit_group_message(${message.id})"><i class="ri-pencil-fill text-primary"></i></a>
                                             <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#"
-                                             onclick="delete_group_message(${message.id})"><i class="ri-delete-bin-7-fill"></i></a>
+                                             onclick="delete_group_message(${message.id})"><i class="ri-delete-bin-7-fill text-danger"></i></a>
                                         </div>
                                     </div>
+                                    <p style="position:absolute; right:3px; top:50px;"><i class="ri-check-line ri-lg" style="text-align:end;"></i></p>
                                 </div>
-                                <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i> ${hours}:${minutes}</p>
+                                <p class="chat-time mb-0">${hours}:${minutes}</p>
                                  
                             </div> 
                         </div>
@@ -1798,7 +2004,7 @@ const add_group_messages = async(message, current_user_id)=>{
             temp +=
              ` <li class="right" id="grmess${message.id}">
                     <div class="conversation-list">
-                        <div class="ctext-wrap" style="width:40%; margin-left:60%;">
+                        <div class="ctext-wrap" style="width:50%; margin-left:50%;">
                             <div class="ctext-wrap-content" style="padding:0px;"> 
                                 <a href="#" onclick="show_photo_sent_gr(${message.id})">
                                         <img class="mb-0 img-thumbnail" src="public/assets/send/sendGroup/${JSON.parse(message.message).savedName}" 
@@ -1809,11 +2015,12 @@ const add_group_messages = async(message, current_user_id)=>{
                                         <i class="ri-more-2-fill ri-lg"></i>
                                         </a>
                                     <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
-                                        <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_group_message(${message.id })"><i class="ri-delete-bin-7-fill"></i></a>
+                                        <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_group_message(${message.id })"><i class="ri-delete-bin-7-fill text-danger"></i></a>
                                     </div>
                                 </div>
+                                <p style="position:absolute; right:21px; top:30px;"><i class="ri-check-line ri-lg" style="text-align:end;"></i></p>
                             </div>
-                            <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i> ${hours}:${minutes}</p>
+                            <p class="chat-time mb-0">${hours}:${minutes}</p>
                             
                             </div>
                         
@@ -1844,13 +2051,13 @@ const add_group_messages = async(message, current_user_id)=>{
                                        <i class="ri-more-2-fill ri-lg"></i>
                                        </a>
                                    <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
-                                       <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_group_message(${message.id })"><i class="ri-delete-bin-7-fill"></i></a>
+                                       <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_group_message(${message.id })"><i class="ri-delete-bin-7-fill text-danger"></i></a>
                                    </div>
                                </div>
-                       
+                               <p style="position:absolute; right:21px; top:30px;"><i class="ri-check-line ri-lg" style="text-align:end;"></i></p>
                             </div>
                        </div>
-                       <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i> ${hours}:${minutes}</p>
+                       <p class="chat-time mb-0"> ${hours}:${minutes}</p>
                        
                        </div>
                </li>`;
@@ -1871,7 +2078,7 @@ const add_group_messages = async(message, current_user_id)=>{
                         <div class="ctext-wrap-content">
                             <p class="mb-0">${message.message}</p>
                         </div>
-                        <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i>${hours}:${minutes}</p>
+                        <p class="chat-time mb-0">${hours}:${minutes}</p>
                     </div>
                     
                 </div>
@@ -1885,7 +2092,7 @@ const add_group_messages = async(message, current_user_id)=>{
                        <div class="chat-avatar">
                            <img src="public/assets/send/uploadImages/${message.profile_photo}" alt="avatar-2">
                        </div>
-                       <div class="ctext-wrap" style="width:40%;">
+                       <div class="ctext-wrap" style="width:50%;">
                            <div class="conversation-name">${message.account_name}</div>
                            <div class="ctext-wrap-content"  style="padding:0px;">
                                 <a href="#" onclick="show_photo_sent_gr(${message.id})">
@@ -1893,7 +2100,7 @@ const add_group_messages = async(message, current_user_id)=>{
                                     style="width:100%;">
                                 </a>
                            </div>
-                           <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i>${hours}:${minutes}</p>
+                           <p class="chat-time mb-0">${hours}:${minutes}</p>
                        </div>
                        
                    </div>
@@ -1920,7 +2127,7 @@ const add_group_messages = async(message, current_user_id)=>{
                                 <small class="fw-bolder text-primary text-white">${size}</small>
                             </div>
                          </div>
-                        <p class="chat-time mb-0"><i class="mdi mdi-clock-outline me-1"></i>${hours}:${minutes}</p>
+                        <p class="chat-time mb-0">${hours}:${minutes}</p>
                     </div>
                     
                 </div>

@@ -17,23 +17,26 @@ const clearChat2 = ()=>{
 
             if(val !== -1){
                 $('#messageList').html('');
-                // var child = document.getElementById('b'+val);
-                // document.getElementById('chatsGroup').removeChild(child);
-                // document.getElementById('search').setAttribute('hidden', true);
-                // document.getElementById('params').setAttribute('hidden', true);
-                // $('#to_user').html('');
                 Swal.fire({
+                    position:'top-end',
+                    showConfirmButton:false,
                     title: 'Deleted!',
                     text: 'Chat has been cleared.',
-                    icon: 'success'
+                    icon: 'success',
+                    timer:1500,
+                    customClass:'swal-class2'
                   })
 
             }
             else{
                 Swal.fire({ 
+                    position:'top-end',
+                    showConfirmButton:false,
                     title: 'Error!',
                     text: 'Some error occured!',
-                    icon: 'error'
+                    icon: 'error',
+                    timer:1500,
+                    customClass:'swal-class2'
                   })
             }
           } else if (
@@ -64,24 +67,32 @@ const leaveChat = ()=>{
     }).then(async function (result) {
         if (result.value) {
             val = await leaveGroup();
-            if(val){
+            if(val.result){
                 $('#messageList').html('');
-
+                $('#gc'+val.id).remove();
                 document.getElementById('search').setAttribute('hidden', true);
                 document.getElementById('params').setAttribute('hidden', true);
                 $('#to_user').html('');
                 Swal.fire({
+                    position:'top-end',
+                    showConfirmButton:false,
                     title: 'Success!',
                     text: 'You have just left the group.',
-                    icon: 'success'
+                    icon: 'success',
+                    timer:2000,
+                    customClass:'swal-class2'
                   })
 
             }
             else{
                 Swal.fire({
+                    position:'top-end',
+                    showConfirmButton:false,
                     title: 'Error!',
                     text: 'Some error occured!',
-                    icon: 'error'
+                    icon: 'error',
+                    timer:1500,
+                    customClass:'swal-class'
                   })
             }
           } else if (
@@ -89,8 +100,12 @@ const leaveChat = ()=>{
             result.dismiss === Swal.DismissReason.cancel
           ) {
             Swal.fire({
-              title: 'Cancelled',
-              icon: 'error'
+                position:'top-end',
+                showConfirmButton:false,
+                title: 'Cancelled',
+                icon: 'error',
+                timer:1500,
+                customClass:'swal-class'
             })
           }
     });
@@ -112,7 +127,7 @@ const leaveGroup = async()=>{
 
     console.log('successfully deleted!');
 
-    return result;
+    return {result, id};
 
 }
 
@@ -144,24 +159,32 @@ const delete_group = ()=>{
                 }).then(async function (result) {
                     if (result.value) {
                         val = await deleteGroup();
-                        if(val){
+                        if(val.result){
                             $('#messageList').html('');
-
+                            $('#gc'+val.id).remove();
                             document.getElementById('search').setAttribute('hidden', true);
                             document.getElementById('params').setAttribute('hidden', true);
                             $('#to_user').html('');
                             Swal.fire({
+                                position:'top-end',
+                                showConfirmButton:false,
                                 title: 'Success!',
                                 text: 'You have just deleted the group.',
-                                icon: 'success'
+                                icon: 'success',
+                                timer:2000,
+                                customClass:'swal-class3'
                             })
 
                         }
                         else{
                             Swal.fire({
+                                position:'top-end',
+                                showCancelButton:false,
                                 title: 'Error!',
                                 text: 'Some error occured!',
-                                icon: 'error'
+                                icon: 'error',
+                                timer:1500,
+                                customClass:'swal-class2'
                               })
                         }
                       } else if (
@@ -169,8 +192,12 @@ const delete_group = ()=>{
                         result.dismiss === Swal.DismissReason.cancel
                       ) {
                         Swal.fire({
-                          title: 'Cancelled',
-                          icon: 'error'
+                            position:'top-end',
+                            showConfirmButton:false,
+                            title: 'Cancelled',
+                            icon: 'error',
+                            timer:1500,
+                            customClass:'swal-class'
                         })
                       }
                 });
@@ -181,8 +208,12 @@ const delete_group = ()=>{
             result.dismiss === Swal.DismissReason.cancel
           ) {
             Swal.fire({
-              title: 'Cancelled',
-              icon: 'error'
+                position:'top-end',
+                showConfirmButton:false,
+                title: 'Cancelled',
+                icon: 'error',
+                timer:1500,
+                customClass:'swal-class'
             })
         }
     });
@@ -204,7 +235,7 @@ const deleteGroup = async()=>{
     }
     console.log('Deleted :)');
 
-    return result;
+    return {result, groupId};
 
 }
 
@@ -231,16 +262,25 @@ $('#deleteAccount').click(function () {
                     await fetch('/delete-user');
                 }else if (result.dismiss === Swal.DismissReason.cancel) {
                     Swal.fire({
-                      title: 'You made a right decision without deleting!',
-                      icon: 'error'
+                        position:'top-end',
+                        showConfirmButton:false,
+                        text: 'You made a right decision without deleting!',
+                        icon: 'error',
+                        timer:1500,
+                        customClass:'swal-class2'
                     })
                 }
             });
 
         }else if (result.dismiss === Swal.DismissReason.cancel) {
             Swal.fire({
-              title: 'Cancelled!',
-              icon: 'error'
+                position:'top-end',
+                showCancelButton:false,
+                showConfirmButton:false,
+                title: 'Cancelled!',
+                icon: 'error',
+                timer:1500,
+                customClass:'swal-class'
             })
         }
     });
@@ -409,12 +449,26 @@ const updateGroupPhoto = async()=>{
     .then(response => response)
     .catch(err => {console.log(err);});
 
-    if(!response.result){
-        console.log('Failed!');
-    }else{
-        console.log('Updated!');
+    if(response.result){
+        Swal.fire({
+            position:'top-end',
+            title:'Photo changed!',
+            showConfirmButton:false,
+            icon:'success',
+            timer:1700,
+            customClass:'swal-class'
+        });
         $('#groupPhoto').html('');
         $('#groupPhoto').append(`<img class="card-img img-fluid rounded-circle img-thumbnail" style="width:130px; height:130px;" src="public/assets/send/groupImages/${response.photo}" alt="Card image">`);
+    }else{
+        Swal.fire({
+            position:'top-end',
+            title:'Some error occured!',
+            showConfirmButton:false,
+            icon:'error',
+            timer:1700,
+            customClass:'swal-class'
+        })
     }
 
 }
@@ -430,14 +484,22 @@ const delete_group_message = async (id)=>{
     if(result){
         $('#grmess'+id).remove();
         Swal.fire({
+            position:'top-end',
+            showConfirmButton:false,
             title: 'Deleted!',
-            icon: 'success'
+            icon: 'success',
+            timer:1500,
+            customClass:'swal-class'
           });
     }else{
         Swal.fire({
+            position:'top-end',
+            showCancelButton:false,
             title: 'Failed!',
             text: 'Unknown error occured.',
-            icon: 'error'
+            icon: 'error',
+            timer:1500,
+            customClass:'swal-class2'
           })
     }
 }
@@ -449,8 +511,8 @@ const edit_group_message = async(id)=>{
     .then(response => response.result)
     .catch(err => {console.log(err);})
     // console.log(mess);
-    if(mess.message){
-
+    if(mess){
+        // console.log('mess.message = '+mess.message);
         $('#updateGrMessage').val(mess.message);
         $('#sendEditMessGr').click(async ()=>{
 
@@ -469,15 +531,23 @@ const edit_group_message = async(id)=>{
 
                 if(result){
                     Swal.fire({
+                        position:'top-end',
+                        showConfirmButton:false,
                         title: 'Edited!',
-                        icon: 'success'
+                        icon: 'success',
+                        timer:1500,
+                        customClass:'swal-class'
                       });
                       $('#grmessage'+id).html(message);
                 }else{
                     Swal.fire({
+                        position:'top-end',
+                        showCancelButton:false,
                         title: 'Failed!',
                         text: 'Unknown error occured.',
-                        icon: 'error'
+                        icon: 'error',
+                        timer:1500,
+                        customClass:'swal-class2'
                       })
                 }
 
@@ -506,7 +576,13 @@ const sendFileModal = () => {
         name = '...'+name.substring(name.length-30);
     }
     // console.log(file);
-    
+    // var index = name.lastIndexOf('.');
+    // name = name.substring(index+1);
+
+    // if(name === "jpeg" || name === "jpg" || name === "png" || name === "tiff" || name === "bmp" || name === "eps"){
+    //     $('#sendfile').html(`<img class="card-img img-fluid rounded-circle img-thumbnail to-user-photo" style="height:140px; width:140px" src="" alt="Card image">`);
+    // }
+
     $('#sendfile').html(name);
 }
 const send_file = async() => {
@@ -700,3 +776,117 @@ document.addEventListener('keypress', (event) => {
     //     $('#fullScreen').click();
     // }
 });
+
+//chats modal
+var chatModal;
+const get_chats_modal = async()=>{
+    chatModal = '';
+    let data = await fetch('/get-chats')
+        .then(response => response.json())
+        .catch(err => {console.log(err);});
+
+    if(data.data){
+        // console.log(data);
+        localStorage.removeItem('chats_modal');
+        localStorage.setItem('chats_modal', JSON.stringify(data));
+
+        for(let user of data.chats){
+            await add_chats_modal(user);
+        }
+        $('#modal_chat_group').html('');
+        $('#modal_chat_group').append(chatModal);
+    }
+}
+const add_chats_modal = async (user) => {
+
+    var now = new Date();
+    var time = new Date(user.create_time);
+    var resultTime;
+    // console.log(user);
+    if (now.getDate() - time.getDate() > 0)
+        resultTime = now.getDate() - time.getDate() + '  days ago';
+    else if (now.getHours() - time.getHours() > 0)
+        resultTime = now.getHours() - time.getHours() + ' hours ago';
+    else
+        resultTime = now.getMinutes() - time.getMinutes() + ' minutes ago';
+
+    if(user.message ){
+
+        if(user.type === 'text'){
+            var contactTemp =
+            ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" data-bs-dismiss="modal" onclick="start_chat(${user.user_id})" id="bm${user.user_id}">
+                    <div class="d-flex">
+                        <div class="user-img away align-self-center me-4 ">
+                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs img-chats" 
+                            alt="avatar-3" style="height:65px!important; width:65px!important;">
+                        </div>
+                        <div class="flex-1 overflow-hidden align-self-center">
+                            <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+                            <p class="text-truncate mb-0">${user.message}</p>
+                        </div>
+                        <div class="font-size-11">${resultTime}</div>
+                    </div>
+            </a>`;
+        }else{
+            var name = JSON.parse(user.message).name;
+            if(name.split(' ').length === 1 && name.length>20){
+                name = '...'+name.substring(name.length-20);
+            }
+            var contactTemp =
+            ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" data-bs-dismiss="modal" onclick="start_chat(${user.user_id})" id="bm${user.user_id}">
+                    <div class="d-flex">
+                        <div class="user-img away  align-self-center me-4 ">
+                            <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs img-chats" 
+                            alt="avatar-3" style="height:65px!important; width:65px!important;">
+                        </div>
+                        <div class="flex-1 overflow-hidden align-self-center">
+                            <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+                            <p class="text-truncate mb-0">${name}</p>
+                        </div>
+                        <div class="font-size-11">${resultTime}</div>
+                    </div>
+             </a>`;    
+        }
+
+    }else{
+
+        var contactTemp =
+        ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" data-bs-dismiss="modal" onclick="start_chat(${user.user_id})" id="bm${user.user_id}">
+                <div class="d-flex">
+                    <div class="user-img away align-self-center me-4 ">
+                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs img-chats" alt="avatar-3" 
+                        style="height:65px!important; width:65px!important;">
+                    </div>
+                    <div class="flex-1 overflow-hidden align-self-center">
+                        <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+                    </div>
+                </div>
+           </a>`;
+
+    }
+
+    chatModal += contactTemp;
+}
+$('#searchChatModal').keyup(async() => { 
+    var val = document.getElementById('searchChatModal').value;
+
+    // console.log('val = ' + val);
+    if(!val)
+        await get_chats_modal();
+
+    let chats = localStorage.getItem('chats_modal');
+    chats = JSON.parse(chats).chats;
+    // console.log(chats);
+ 
+    for(let i=0; i < chats.length; i++){
+        if (!chats[i].account_name.toLowerCase().includes(val.toLowerCase())) {
+            // console.log(user);
+            childNode = document.getElementById('bm' + chats[i].user_id);
+            document.getElementById('modal_chat_group').removeChild(childNode);
+            chats.splice(i, 1);
+            localStorage.removeItem('chats_modal');
+            localStorage.setItem('chats_modal', JSON.stringify({chats: chats}));
+        }
+    }
+});
+
