@@ -433,13 +433,15 @@ const get_all_users = async (req, res) => {
 }
 
 const create_group = async (req, res) => {
-    // console.log(req.body.data);
     try {
 
+        let filename = req.file.filename;
         let user = req.session.user.user_id;
+       
         let data = {
-            name: req.body.data.name,
-            users: req.body.data.users,
+            photo:filename,
+            name: req.body.name,
+            users: req.body.users,
             owner: req.session.user.user_id
         };
         let datum = await createGroup(data, user);

@@ -135,7 +135,8 @@ const createGroup = async (group, user) => {
             name: group.name,
             users: group.users,
             owner: group.owner,
-            create_time: new Date()
+            create_time: new Date(),
+            photo: group.photo
         })
         .then(result => {
             return result;

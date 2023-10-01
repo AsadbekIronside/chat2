@@ -769,14 +769,6 @@ const fullscreen = () => {
     
 }
 
-document.addEventListener('keypress', (event) => {
-    console.log('Ishlavotti');
-    // event.preventDefault();
-    // if(event.key === "F11"){
-    //     $('#fullScreen').click();
-    // }
-});
-
 //chats modal
 var chatModal;
 const get_chats_modal = async()=>{
@@ -797,7 +789,7 @@ const get_chats_modal = async()=>{
         $('#modal_chat_group').append(chatModal);
     }
 }
-const add_chats_modal = async (user) => {
+const add_chats_modal = async (user) => { 
 
     var now = new Date();
     var time = new Date(user.create_time);

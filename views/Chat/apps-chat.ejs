@@ -10,7 +10,7 @@
 
             <div class="d-lg-flex mb-1 mt-0" style="min-height: 500px;">
                 <div class="chat-leftsidebar">
-                    <div class="card-body border-bottom padding-search"  style="border:1px solid green;">
+                    <div class="card-body border-bottom padding-search">
                         <div class="search-box chat-search-box">
                             <div class="position-relative">
                                 <input type="text" class="form-control" placeholder="Search..." id="searchChats">
@@ -19,7 +19,7 @@
                         </div>
                     </div>
 
-                    <div class="py-3 py-md-4"  style="border:1px solid green;">
+                    <div class="py-3 py-md-4">
                         <div class="chat" id="chat">
                             <div>
                                 <h5 class="font-size-14 px-3 mb-3" id="ChatTitle">Chats</h5>
@@ -95,7 +95,7 @@
                         </div>
 
                     </div>
-                    <div class="px-lg-3">
+                    <div class="px-lg-3" >
                         <div class="p-3 pb-0 chat-input-section">
                             <form>
                                 <div class="row" id="enterMessage" style="height: 50px;">
@@ -331,13 +331,38 @@
                             </div>
                         </div>
                     </div>
-
+                    <!-- group profile photo -->       
+                    <div class="modal fade bs-example-modal-center" tabindex="-1" aria-hidden="false"
+                        id="groupModalPhoto">
+                        <div class="modal-dialog-centered modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <button type="button" data-bs-target="#newgroup" data-bs-toggle="modal"
+                                    data-bs-dismiss="modal" style="border: 0px; background-color: white;"><i
+                                        class="bi bi-arrow-left align-middle ri-2x"></i></button>
+                                    <form>
+                                        <label for="profilePhotGR">
+                                            <input class="form-control" id="profilePhotGR" type="file" accept="image/*">
+                                        </label>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="closeGrPho" class="btn btn-light waves-effect"
+                                        style="border: 0px; color: darkred; font-weight: bolder;"
+                                        data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" id="grPhoto" class="btn btn-light waves-effect waves-light"
+                                        style="border: 0px; color: darkgreen; font-weight: bolder;"
+                                        onclick="setGroupPhoto()">Next</button>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div>
+                    <!-- group name -->
                     <div class="modal fade" id="newgroup" data-bs-keyboard="false" tabindex="-1" role="dialog"
                         aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
                             <div class="modal-content">
-                                <div class="modal-body"
-                                    style="overflow-y: auto; max-height: 500px; scrollbar-width: thin;">
+                                <div class="modal-body" style="overflow-y: auto; max-height: 500px; display: flex;">
                                     <form style="color: darkgreen;">
                                         <label class="form-label" for="groupName" id="groupNameLabel">
                                             Group Name

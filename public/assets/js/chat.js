@@ -609,6 +609,16 @@ const start_new_chat = async (userId) => {
     }, 800);
 
     document.querySelector('#modal_close_contact').click();
+
+    ////////
+    if($('#ChatTitle').html() === 'Groups'){
+
+        document.getElementById('searchGroupChat').outerHTML = `<input type="text" class="form-control" placeholder="Search..." id="searchChats">`;
+        await get_chats();
+        $('#ChatTitle').html('Chats');
+    }
+    /////////
+
     const contactTemp =
     ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="start_chat(${response.user_id})" id="b${response.user_id}">
             <div class="d-flex">
@@ -652,6 +662,7 @@ const start_new_chat = async (userId) => {
             document.getElementById('send_button').click();
         }
     });
+
 };
 
 // get active time 
@@ -801,7 +812,7 @@ const add_chats = async (user) => {
                         </div>
                         <div class="font-size-11">${resultTime}</div>
                     </div>
-            </a>`;
+             </a>`;
         }else{
             var name = JSON.parse(user.message).name;
             if(name.split(' ').length === 1 && name.length>20){
@@ -844,7 +855,9 @@ const add_chats = async (user) => {
 }
 
 const get_chats = async () => {
+
     resultChat = '';
+
     let data = await fetch('/get-chats')
         .then(response => response.json())
         .catch(err => {console.log(err);});
@@ -857,15 +870,20 @@ const get_chats = async () => {
         for(let user of data.chats){
             await add_chats(user);
         }
-        $('#chatsGroup').html('');
+        // console.log(resultChat);
+        $('#chatsGroup').empty();
         $('#chatsGroup').append(resultChat);
+
+        // console.log(resultChat.length);
     }
        
+}
+
+const search_chats = () => {
     $('#searchChats').keyup(async function (e) { 
-
         var val = document.getElementById('searchChats').value;
-
-        // console.log('val = ' + val);
+    
+        console.log('val = ' + val);
         if(!val)
             await get_chats();
     
@@ -886,10 +904,9 @@ const get_chats = async () => {
     
     });
 }
-
-// (get_chats)();
 $(document).ready(function () {
     get_chats();
+    search_chats();
 });
 
 var myInterval = setInterval(() => { }, 10000);
@@ -1052,6 +1069,7 @@ const start_chat = async (userId) => {
         document.getElementById('searchGroupChat').outerHTML = `<input type="text" class="form-control" placeholder="Search..." id="searchChats">`;
         await get_chats();
         $('#ChatTitle').html('Chats');
+        search_chats();
     }
 
 };
@@ -1334,23 +1352,42 @@ const newGroup = () => {
 
 }
 
-var groupInfo;
-const selectContacts = async () => {
+var formData = new FormData();
+const selectContacts = () => {
 
-    groupInfo = {};
     var groupNameNode = document.getElementById('groupName');
     var groupName = groupNameNode.value;
-    groupNameNode.value = '';
 
     if (!groupName) {
         groupNameNode.style.borderColor = 'red';
         document.getElementById('groupNameLabel').style.color = 'red';
     }
     else {
-        $('#selectContacts').modal('show');
+        $('#groupModalPhoto').modal('show');
         document.getElementById('closeModalgr').click();
-        groupInfo.name = groupName;
+        formData.append('name', groupName);
+        
+    }
+}
+
+///// set group photo
+
+const setGroupPhoto = async() => {
+
+    var photo = document.getElementById('profilePhotGR').files[0];
+
+    if(photo){
+        // console.log(photo);
+        formData.append('photo', photo);
+
+        $('#closeGrPho').click();
+        $('#selectContacts').modal('show');
+
         await getAllUsers();
+    }else{
+        document.getElementById('profilePhotGR').style.borderColor='red';
+        return;
+
     }
 }
 
@@ -1358,6 +1395,12 @@ document.getElementById('groupName').addEventListener('keypress', (event)=>{
     if(event.key === 'Enter'){
         event.preventDefault();
         document.getElementById('nextBtn').click();
+    }
+});
+document.getElementById('profilePhotGR').addEventListener('keypress', (event)=>{
+    if(event.key === 'Enter'){
+        event.preventDefault();
+        document.getElementById('grPhoto').click();
     }
 })
 
@@ -1417,19 +1460,21 @@ const createGroup = async () => {
     // console.log('result = '+result);
     result = result.substring(0, result.length - 1);
 
-    groupInfo.users = result;
-
-    // console.log(groupInfo);
+    formData.append('users', result);
 
     let result2 = await fetch('/create-group', {
         method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ data: groupInfo })
+        body: formData
     });
     let result3 = await result2.json();
     console.log("kelgan data ::", result3);
     document.getElementById('closeModalLast').click();
     start_new_group(result3.result);
+
+    /////// 
+    document.getElementById('groupName').value = '';
+    document.getElementById('groupNameLabel').style.color = 'darkgreen';
+    document.getElementById('groupName').style.color = 'darkgreen';
 }   
 var groupResult;
 
@@ -1565,6 +1610,41 @@ const start_new_group = async(id)=>{
     }
 
     if(owner){
+        var active_time = parseInt(owner.active_time);
+        var delta = Date.now() - active_time;
+        var resTime = '';
+        // console.log('delta = '+delta);
+
+        if(delta >= 2*30*24*60*60*1000){
+            resTime += Math.trunc(delta / (30*24*60*60*1000))+" months ago";
+        }
+        else if(delta >= 30*24*60*60*1000){
+            resTime += "last month";
+        }
+        else if(delta >= 2*7*24*60*60*1000){
+            resTime += Math.trunc(delta / (7*24*60*60*1000))+" weeks ago";
+        }
+        else if(delta >= 7*24*60*60*1000){
+            resTime += "last week";
+        }
+        else if(delta >= 2*24*60*60*1000){
+            resTime += Math.trunc(delta / (24*60*60*1000))+" days ago";
+        }
+        else if(delta >= 24*60*60*1000){
+            resTime += "yesterday";
+        }else if(delta >= 2*60*60*1000){
+            resTime += Math.trunc(delta / (60*60*1000))+" hours ago";
+        }
+        else if(delta >= 60*60*1000){
+            resTime += 'an hour ago';
+        }
+        else if(delta >= 2*60*1000){
+            resTime += Math.trunc(delta / (60*1000))+" minutes ago";
+        }else{
+            resTime += "Active now";
+        }
+
+
         if(owner.user_id === current_user){
             let menuTemp =
             `<a class="dropdown-item" href="#groupProfile" data-bs-toggle="modal"><i class="bi bi-info-circle align-middle fa-lg me-2"></i>View Group Info</a>
@@ -1581,6 +1661,7 @@ const start_new_group = async(id)=>{
                    </div>
                    <div class="flex-1 overflow-hidden align-self-center">
                        <h5 class="text-truncate font-size-14 mb-1">${owner.account_name}</h5>
+                       <small class="text-truncate mb-0 text-primary">${resTime}</small>
                    </div>
                    <div class="font-size-13 text-primary">Owner</div>
                </div>
@@ -1595,6 +1676,7 @@ const start_new_group = async(id)=>{
                     </div>
                     <div class="flex-1 overflow-hidden align-self-center">
                         <h5 class="text-truncate font-size-14 mb-1">${owner.account_name}</h5>
+                        <small class="text-truncate mb-0 text-primary">${resTime}</small>
                     </div>
                     <div class="font-size-13 text-primary">Owner</div>
                 </div>
@@ -1740,6 +1822,41 @@ const add_groups_chat = (group)=> {
 
 const add_members = (user, current_user)=>{
 
+    var active_time = parseInt(user.active_time);
+    var delta = Date.now() - active_time;
+    var resTime = '';
+    // console.log('delta = '+delta);
+
+    if(delta >= 2*30*24*60*60*1000){
+        resTime += Math.trunc(delta / (30*24*60*60*1000))+" months ago";
+    }
+    else if(delta >= 30*24*60*60*1000){
+        resTime += "last month";
+    }
+    else if(delta >= 2*7*24*60*60*1000){
+        resTime += Math.trunc(delta / (7*24*60*60*1000))+" weeks ago";
+    }
+    else if(delta >= 7*24*60*60*1000){
+        resTime += "last week";
+    }
+    else if(delta >= 2*24*60*60*1000){
+        resTime += Math.trunc(delta / (24*60*60*1000))+" days ago";
+    }
+    else if(delta >= 24*60*60*1000){
+        resTime += "yesterday";
+    }else if(delta >= 2*60*60*1000){
+        resTime += Math.trunc(delta / (60*60*1000))+" hours ago";
+    }
+    else if(delta >= 60*60*1000){
+        resTime += 'an hour ago';
+    }
+    else if(delta >= 2*60*1000){
+        resTime += Math.trunc(delta / (60*1000))+" minutes ago";
+    }else{
+        resTime += "Active now";
+    }
+
+
     if(user.user_id === current_user){
         var temp = 
         ` <a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder" onclick="show_member_profile(${user.user_id})">
@@ -1749,6 +1866,7 @@ const add_members = (user, current_user)=>{
                     </div>
                     <div class="flex-1 overflow-hidden align-self-center">
                         <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+                        <small class="text-truncate mb-0 text-primary">Active now</small>
                     </div>
                 </div>
            </a>`;
@@ -1762,6 +1880,7 @@ const add_members = (user, current_user)=>{
                     </div>
                     <div class="flex-1 overflow-hidden align-self-center">
                         <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+                        <small class="text-truncate mb-0 text-primary">${resTime}</small>
                     </div>
                 </div>
            </a>`;
