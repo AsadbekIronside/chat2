@@ -127,7 +127,6 @@ async function addMessage(message, to_user_info) {
     if (message.from_user_id !== to_user_info.user_id) {    
 
         if(message.type === 'text'){
-
             temp += ` <li class="right" id="message${message.message_id}">
                         <div class="conversation-list">
                             <div class="ctext-wrap">
@@ -137,7 +136,7 @@ async function addMessage(message, to_user_info) {
                                             <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
                                             <i class="ri-more-2-fill ri-lg"></i>
                                             </a>
-                                        <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
+                                        <div class="dropdown-menu myDropdown" style="position:absolute; min-width:0.3rem;">
                                             <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#editMessage" data-bs-toggle="modal"
                                              onclick="edit_message(${message.message_id})"><i class="ri-pencil-fill text-primary"></i></a>
                                             <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })">
@@ -167,7 +166,7 @@ async function addMessage(message, to_user_info) {
                                         <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
                                           <i class="ri-more-2-fill ri-lg"></i>
                                         </a>
-                                    <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
+                                    <div class="dropdown-menu myDropdown" style="position:absolute; min-width:0.3rem;">
                                         <a class="dropdown-item text-danger" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })"><i class="ri-delete-bin-7-fill"></i></a>
                                     </div>
                                 </div>
@@ -209,7 +208,7 @@ async function addMessage(message, to_user_info) {
                                        <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
                                        <i class="ri-more-2-fill ri-lg"></i>
                                        </a>
-                                   <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
+                                   <div class="dropdown-menu myDropdown" style="position:absolute; min-width:0.3rem;">
                                        <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_message(${message.message_id })">
                                        <i class="ri-delete-bin-7-fill text-danger"></i></a>
                                    </div>
@@ -326,7 +325,7 @@ async function sendMessage() {
 var count = 0;
 
 async function getMessages(to_user_id) {
-    console.log('count=' + count);
+    // console.log('count=' + count);
     const response = await fetch('/get-messages?count=' + count + '&toUserId=' + to_user_id)
         .then(response => response.json());
 
@@ -1348,8 +1347,12 @@ $('#profilePhot').keypress((event)=>{
 //////groups
 
 const newGroup = () => {
-    document.getElementById('modal_close_group').click();
 
+    document.getElementById('modal_close_group').click();
+    document.getElementById('groupName').value = '';
+    document.getElementById('groupNameLabel').style.color = 'darkgreen';
+    document.getElementById('groupName').style.borderBottom = '2px solid darkgreen';
+    document.getElementById('profilePhotGR').files = null;
 }
 
 var formData = new FormData();
@@ -1423,16 +1426,16 @@ const getAllUsers = async () => {
 
 const addAllUsers = (user) => {
     let usersTemp =
-        `<div class="form-check my-0 ps-3 pe-1 py-2" id="form${user.user_id}" style="height:7rem">
+        `<div class="form-check my-0 ps-3 pe-1 py-2" id="form${user.user_id}" style="height:3.6rem">
             <label class="form-check-label ms-2" for="formCheck${user.user_id}" style="width:95%!important;" onclick="input_checked(${user.user_id})">
             <input class="form-check-input" type="checkbox" id="formCheck${user.user_id}" style="margin-top:14px" hidden>
                 <div class="d-flex">
                     <div class="user-img away align-self-center me-4">
-                        <img src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3 ms-2"
+                        <img id="img${user.user_id}" src="public/assets/send/uploadImages/${user.profile_photo}" class="rounded-circle avatar-xs" alt="avatar-3 ms-2"
                          style="height:45px;width:45px;">
                     </div>
                     <div class="flex-1 align-self-center me-4">
-                        <h5 class="text-truncate font-size-14 mb-1">${user.account_name}</h5>
+                        <h5 class="text-truncate font-size-14 mb-1" id="name${user.user_id}">${user.account_name}</h5>
                         <p class="text-truncate mb-0 font-size-12 text-primary">@${user.username}</p>
                     </div>
                 </div>
@@ -1440,12 +1443,41 @@ const addAllUsers = (user) => {
          </div>`
     resultAllUser += usersTemp;
 }
+///search users to add new Group
+$('#selectUsers').keyup(async() => {
+    var val = document.getElementById('searchChats').value;
+    
+    console.log('val = ' + val);
+    if(!val)
+        await getAllUsers();
+
+    let chats = localStorage.getItem('chats');
+    chats = JSON.parse(chats).chats;
+    // console.log(chats);
+ 
+    for(let i=0; i < chats.length; i++){
+        if (!chats[i].account_name.toLowerCase().includes(val.toLowerCase())) {
+            // console.log(user);
+            childNode = document.getElementById('b' + chats[i].user_id);
+            document.getElementById('chatsGroup').removeChild(childNode);
+            chats.splice(i, 1);
+            localStorage.removeItem('chats');
+            localStorage.setItem('chats', JSON.stringify({chats: chats}));
+        }
+    }
+})
 const input_checked = (id) => {
     if(document.getElementById('formCheck' + id).checked){
-        $('#form'+id).css({'border':'1px solid blue', 'opacity':'0.5'});
+        $('#form'+id).css({'opacity':'0.5'});
+        $('#img'+id).css({'border':'3px solid darkgreen'});
+        $('#name'+id).css({'color':"darkgreen"});
     }
-    else    
+    else {
         $('#form'+id).css({'background-color':'white', 'border':'0px', 'opacity':'1'});
+        $('#img'+id).css({'border':'0px'});
+        $('#name'+id).css({'color':'black'});
+    }  
+       
 }
 const createGroup = async () => {
 
@@ -1470,6 +1502,33 @@ const createGroup = async () => {
     console.log("kelgan data ::", result3);
     document.getElementById('closeModalLast').click();
     start_new_group(result3.result);
+
+    ///////////// add new group to chat groups
+
+    let group = await fetch('/get-group-info?id='+id)
+    .then(response => response.json())
+    .then(response => response.result)
+    .catch(err => {console.log(err);});
+
+    if($('#ChatTitle').html() === 'Groups'){
+        $('#chatsGroup').append(
+            `<a href="javascript:void(0);" class="list-group-item list-group-item-action fw-bolder list-chats" onclick="start_new_group(${group.id})" 
+            id="gc${group.id}">
+                      <div class="d-flex">
+                          <div class="user-img away align-self-center me-4"">
+                              <img src="public/assets/send/groupImages/${group.photo}" class="rounded-circle avatar-xs img-chats"
+                               alt="avatar-3" style="height:50px!important; width:50px!important; border:1px solid lightblue;">
+                          </div>
+                          <div class="flex-1 overflow-hidden align-self-center">
+                              <h3 class="text-truncate font-size-15 mb-1">${group.name}</h3>
+                          </div>
+                      </div>
+            </a>`  
+        );
+
+    }
+
+    
 
     /////// 
     document.getElementById('groupName').value = '';
@@ -1515,7 +1574,7 @@ const add_groups = (group)=>{
                             alt="avatar-3" style="height:65px!important; width:65px!important; border:1px solid lightblue;">
                        </div>
                        <div class="flex-1 overflow-hidden align-self-center">
-                           <h3 class="text-truncate font-size-15 mb-1">${group.name}</h3>
+                           <h3 class="text-truncate font-size-15 mb-1 grname${group.id}">${group.name}</h3>
                        </div>
                    </div>
          </a>`;
@@ -1564,7 +1623,7 @@ const start_new_group = async(id)=>{
     let users = group.users.split(',');
 
     let groupProfile = 
-        `<h5 class="font-size-15 mb-1 text-truncate">${group.name}<p id="groupId" hidden>${group.id}</p></h5>
+        `<h5 class="font-size-15 mb-1 text-truncate group-name">${group.name}<p id="groupId" hidden>${group.id}</p></h5>
         <p class="text-truncate mb-0 members">${users.length+1} members</p>`;
 
     $('#to_user').html('');
@@ -1581,7 +1640,7 @@ const start_new_group = async(id)=>{
     ////
 
     const cardBody =
-        `<h6 class="card-text ">${group.name}</h6>
+        `<h6 class="card-text group-name">${group.name}</h6>
          <p class="card-text members">${users.length+1} members</p>`;
 
     $('#cardBodyGroup').html('');
@@ -1812,7 +1871,7 @@ const add_groups_chat = (group)=> {
                         alt="avatar-3" style="height:50px!important; width:50px!important; border:1px solid lightblue;">
                    </div>
                    <div class="flex-1 overflow-hidden align-self-center">
-                       <h3 class="text-truncate font-size-15 mb-1">${group.name}</h3>
+                       <h3 class="text-truncate font-size-15 mb-1 grname${group.id}">${group.name}</h3>
                    </div>
                </div>
      </a>`;
@@ -2103,7 +2162,7 @@ const add_group_messages = async(message, current_user_id)=>{
                                             <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
                                             <i class="ri-more-2-fill ri-lg"></i>
                                             </a>
-                                        <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
+                                        <div class="dropdown-menu myDropdown" style="position:absolute; min-width:0.3rem;">
                                             <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#editGrMessage" data-bs-toggle="modal"
                                              onclick="edit_group_message(${message.id})"><i class="ri-pencil-fill text-primary"></i></a>
                                             <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#"
@@ -2133,7 +2192,7 @@ const add_group_messages = async(message, current_user_id)=>{
                                         <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
                                         <i class="ri-more-2-fill ri-lg"></i>
                                         </a>
-                                    <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
+                                    <div class="dropdown-menu myDropdown" style="position:absolute; min-width:0.3rem;">
                                         <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_group_message(${message.id })"><i class="ri-delete-bin-7-fill text-danger"></i></a>
                                     </div>
                                 </div>
@@ -2169,7 +2228,7 @@ const add_group_messages = async(message, current_user_id)=>{
                                        <a class="dropdown-toggle" data-bs-toggle="dropdown" data-toggle="dropdown">
                                        <i class="ri-more-2-fill ri-lg"></i>
                                        </a>
-                                   <div class="dropdown-menu" style="position:absolute; min-width:0.3rem;">
+                                   <div class="dropdown-menu myDropdown" style="position:absolute; min-width:0.3rem;">
                                        <a class="dropdown-item" style="padding:0.3rem 1.2rem;" href="#" onclick="delete_group_message(${message.id })"><i class="ri-delete-bin-7-fill text-danger"></i></a>
                                    </div>
                                </div>

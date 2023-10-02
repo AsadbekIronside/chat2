@@ -107,6 +107,7 @@ module.exports = function (app) {
       app.post('/add-users', isUserAllowed, mainController.add_users_to_group);
       app.get('/get-group-members-info', isUserAllowed, mainController.get_group_members_info);
       app.post('/update-group-photo', isUserAllowed, uploadGroupPhotos.single('photo'), mainController.update_group_photo);
+      app.post('/change-group-name', isUserAllowed, mainController.update_group_name);
 
       /////group messages
 

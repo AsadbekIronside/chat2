@@ -208,7 +208,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" data-bs-target="#myModal" data-bs-toggle="modal"
-                                data-bs-dismiss="modal" style="border: 0px; background-color: white;"><i
+                                data-bs-dismiss="modal" style="border: 0px; background-color: white;" class="arrow"><i
                                     class="bi bi-arrow-left align-middle ri-2x"></i></button>
                             <button type="button" id="btnClosePhoto" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
@@ -280,7 +280,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" data-bs-target="#myModal" data-bs-toggle="modal"
-                                        data-bs-dismiss="modal" style="border: 0px; background-color: white;"><i
+                                        data-bs-dismiss="modal" style="border: 0px; background-color: white;" class="arrow"><i
                                             class="bi bi-arrow-left align-middle ri-2x"></i></button>
                                     <button type="button" id="btnClosePhoto" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
@@ -338,7 +338,7 @@
                             <div class="modal-content">
                                 <div class="modal-body">
                                     <button type="button" data-bs-target="#newgroup" data-bs-toggle="modal"
-                                    data-bs-dismiss="modal" style="border: 0px; background-color: white;"><i
+                                    data-bs-dismiss="modal" style="border: 0px; background-color: white;" class="arrow"><i
                                         class="bi bi-arrow-left align-middle ri-2x"></i></button>
                                     <form>
                                         <label for="profilePhotGR">
@@ -383,6 +383,32 @@
                         </div>
                     </div>
 
+                     <!-- edit group name  -->
+                     <div class="modal fade" tabindex="-1" aria-hidden="false" id="modalGroupName">
+                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" data-bs-target="#groupProfile" data-bs-toggle="modal"
+                                        data-bs-dismiss="modal" style="border: 0px; background-color: white;" class="arrow"><i
+                                            class="bi bi-arrow-left align-middle ri-2x"></i></button>
+                                    <button type="button" id="btnClosePhoto" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <label class="form-label" id="currentGroupName">
+                                        </label>
+                                        <label class="form-label" for="newGroupName">
+                                            New Group Name:
+                                            <input type="text" class="form-control" placeholder="Enter name..." id="newGroupName">
+                                        </label>
+                                        <button type="button" class=" btn btn-success border btn-sm ms-2" id="saveGroupName"
+                                            data-bs-dismiss="modal">Save</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <!-- select contacts -->
                     <div class="modal fade" id="selectContacts" data-bs-keyboard="false" tabindex="-1" role="dialog"
                         aria-hidden="true">
@@ -390,13 +416,13 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h6 class="modal-title" style="color: darkgreen;">All Users</h6>
-                                    <form class="app-search d-lg-block ms-1">
+                                    <!-- <form class="app-search d-lg-block ms-1">
                                         <div class="position-relative">
                                             <input type="text" class="form-control"
-                                                placeholder="<%=translation.Search%>" id="searchContact">
+                                                placeholder="<%=translation.Search%>" id="selectUsers">
                                             <span class="ri-search-line"></span>
                                         </div>
-                                    </form>
+                                    </form> -->
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close" id="modal_close_contact"></button>
                                 </div>
@@ -417,7 +443,6 @@
                     </div>
 
                     <!-- group profile -->
-
                     <div class="modal fade" id="groupProfile" data-bs-keyboard="false" tabindex="-1" role="dialog"
                         aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
@@ -429,32 +454,38 @@
                                 <div class="modal-body">
                                     <div class="card">
                                         <div class="row no-gutters align-items-center border bg-white p-2">
-                                            <div class="col-md-4 " id="groupPhoto">
+                                            <div class="col-6 col-sm-4 " id="groupPhoto">
                                             </div>
-                                            <div class="col-md-8">
+                                            <div class="col-6 col-sm-8">
                                                 <div class="card-body" id="cardBodyGroup">
                                                 </div>
                                             </div>
-                                            <div class="col-12 mt-3 ms-2 mb-3">
+                                            <div class="col-12 mt-3 ms-2">
                                                 <a href="#modalProfilePhoto2" data-bs-toggle="modal"
                                                     data-bs-dismiss="modal" class="text-dark ms-4">
-                                                    <i
-                                                        class="ri-image-add-fill align-middle me-1 ri-lg text-success"></i>
-                                                    <span style="color: green;">Change Group Photo</span>
+                                                    <i class="ri-image-add-fill align-middle me-1 ri-lg text-success"></i>
+                                                    <span>Change Group Photo</span>
+                                                </a>
+                                            </div>
+                                            <div class="col-12 ms-2 mt-2 mb-3">
+                                                <a href="#modalGroupName" data-bs-toggle="modal" data-bs-dismiss="modal"
+                                                    class="text-dark ms-4">
+                                                    <i class="ri-pencil-line align-middle me-1 ri-lg text-success"></i>
+                                                    <span>Change Group Name</span>
                                                 </a>
                                             </div>
                                             <hr>
                                             <div class="col-12 mb-2 ms-2">
                                                 <div class="d-flex w-100">
-                                                    <div class="align-self-center me-4 ">
+                                                    <div class="align-self-center me-4 mt-2 ">
                                                         <i class="ri-group-line ri-lg me-3 ms-2"></i> MEMBERS
                                                     </div>
-                                                    <div class="flex-3" style="align-items: end;">
+                                                    <span class="flex-3" style="margin-bottom: 13px; margin-left:60%;">
                                                         <a href="#addUser" class="text-success" data-bs-toggle="modal" data-bs-dismiss="modal" 
                                                             onclick="getUsersToAdd()">
                                                             <i class="bi bi-person-plus fa-2x"></i>
                                                         </a>
-                                                    </div>
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div class="list-group col-12 myScroll" style="max-height: 340px; overflow-y: scroll;" id="groupMembers">
@@ -463,8 +494,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
+                        </div>            
                     </div>
                     <!-- group members  -->
                     <div class="modal fade" id="groupMemberProfile" data-bs-keyboard="false" tabindex="-1" role="dialog"
@@ -473,7 +503,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" data-bs-target="#groupProfile" data-bs-toggle="modal"
-                                        data-bs-dismiss="modal" style="border: 0px; background-color: white;"><i
+                                        data-bs-dismiss="modal" style="border: 0px; background-color: white;" class="arrow"><i
                                             class="bi bi-arrow-left align-middle ri-2x"></i></button>
                                     <button type="button" id="btnCloseGroupMember" class="btn-close"
                                         data-bs-dismiss="modal" aria-label="Close"></button>
@@ -495,7 +525,7 @@
                             <div class="modal-dialog col-sm-6 col-lg-2 col-md-4 col-12" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h6 class="modal-title" style="color: darkgreen;">Contacts</h6>
+                                        <h6 class="modal-title" style="color: darkgreen;">Users</h6>
                                         <form class="app-search d-lg-block ms-1">
                                             <div class="position-relative">
                                                 <input type="text" class="form-control" placeholder="Search..."
@@ -529,7 +559,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" data-bs-target="#groupProfile" data-bs-toggle="modal"
-                                        data-bs-dismiss="modal" style="border: 0px; background-color: white;"><i
+                                        data-bs-dismiss="modal" style="border: 0px; background-color: white;" class="arrow"><i
                                             class="bi bi-arrow-left align-middle ri-2x"></i></button>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>

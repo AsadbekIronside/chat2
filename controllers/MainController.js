@@ -4,7 +4,7 @@ const { postMessages, getMessages, getUser, clearChat, getOnesTypedUser, getOnes
         updateAccountName, updateProfilePhoto, getAllUsers, createGroup, getMessagesUserRelated,
         getAllGroups, getGroupById, getGroupMessages, postGroupMessages, updateGroupUsers, deleteGroup,
         updateGroupPhoto, deleteUser, getGroupMember, deleteMessage, editMessage, delGroupMess, editGroupMess,
-        getGroupMessById, postFileMess, postFileGroup, get_unreplied_user
+        getGroupMessById, postFileMess, postFileGroup, get_unreplied_user, updateGroupName
 
 } = require('../model/crud');
 
@@ -994,6 +994,26 @@ const get_active_time = async (req, res) => {
 
 }
 
+const update_group_name = async(req, res) => {
+
+    try {
+
+        let user = req.session.user.user_id;
+        let id = parseInt(req.query.id);
+        let name = req.body.name;
+
+        var resul = await updateGroupName(id, name, user);
+        // if(resul)
+        //     console.log('Group name updated!');
+        res.json({result:resul});
+        
+    } catch (error) {
+        console.log(error);
+        res.json({result:false});
+    }
+
+}
+
 module.exports = {
     get_main_page, post_messages,
     get_messages, get_contacts,
@@ -1014,6 +1034,6 @@ module.exports = {
     post_file, post_file_group,
     get_file, get_group_file,
     get_file_info, get_group_file_info,
-    get_active_time
+    get_active_time, update_group_name
 
 }   

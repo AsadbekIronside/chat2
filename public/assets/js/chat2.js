@@ -44,9 +44,13 @@ const clearChat2 = ()=>{
             result.dismiss === Swal.DismissReason.cancel
           ) {
             Swal.fire({
-              title: 'Cancelled',
-              text: 'Your messaages are safe :)',
-              icon: 'error'
+                position:'top-end',
+                showConfirmButton:false,
+                title: 'Cancelled',
+                text: 'Your messaages are safe :)',
+                icon: 'error',
+                timer:1500,
+                customClass:'swal-class3'
             })
           }
     });
@@ -489,7 +493,7 @@ const delete_group_message = async (id)=>{
             title: 'Deleted!',
             icon: 'success',
             timer:1500,
-            customClass:'swal-class'
+            customClass:'swal-class2'
           });
     }else{
         Swal.fire({
@@ -536,7 +540,7 @@ const edit_group_message = async(id)=>{
                         title: 'Edited!',
                         icon: 'success',
                         timer:1500,
-                        customClass:'swal-class'
+                        customClass:'swal-class2'
                       });
                       $('#grmessage'+id).html(message);
                 }else{
@@ -881,4 +885,63 @@ $('#searchChatModal').keyup(async() => {
         }
     }
 });
+
+/////Change group name
+
+$('#saveGroupName').click(async() => {
+    // console.log('clicked');
+    var name = $('#newGroupName').val();
+    var gr_id = $('#groupId').html();
+
+    console.log('name = '+name);
+    console.log('group id = '+gr_id);
+
+    if(!name){
+        $('#newGroupName').css({'border-color':'red', 'color':'red'});
+        $('[for="newGroupName"]').css({'color':'red'});
+        return;
+    }
+    var result = await fetch('/change-group-name?id='+gr_id, {
+        method:"POST",
+        headers:{"Content-type": "application/json"},
+        body:JSON.stringify({name:name})
+    })
+    .then(response => response.json())
+    .then(response => response.result)
+    .catch(err => {console.log(err);});
+
+    if(result){
+
+        $('.group-name').html(name);
+        $('.grname'+gr_id).html(name);
+
+        Swal.fire({
+            position:'top-end',
+            showConfirmButton:false,
+            icon:'success',
+            text:'Changed successfully!',
+            timer:1700,
+            customClass:'swal-class'
+        });
+
+    }else {
+        Swal.fire({
+            position:'top-end',
+            showConfirmButton:false,
+            icon:'error',
+            text:'Unknown error occured!',
+            timer:1700,
+            customClass:'swal-class'
+        });
+    }
+});
+
+$('#newGroupName').keypress((event)=>{  
+
+    if(event.key === 'Enter'){
+        event.preventDefault();
+        $('#saveGroupName').click();
+    }
+});
+
 

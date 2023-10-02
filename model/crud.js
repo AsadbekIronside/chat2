@@ -261,6 +261,18 @@ const updateGroupPhoto = async(id, photo, user)=>{
     });
 }
 
+const updateGroupName = async(id, name, user) => {
+    await knex(users).update({active_time:Date.now()}).where('user_id', '=', user);
+    
+    return await knex(groups).update({name:name, update_time: new Date()})
+    .where('id', '=', id)
+    .then(result => true)
+    .catch(err => {
+        console.log(err);
+        return false;
+    });
+}
+
 const getGroupMember = async (user_id) => {
     return await knex(users).select(['user_id', 'username', 'account_name', 'profile_photo', 'user_status', 'active_time'])
         .where('user_id', '=', user_id);
@@ -372,7 +384,7 @@ module.exports = {
     deleteGroup, updateGroupPhoto,
     getGroupMember,editMessage,
     delGroupMess, editGroupMess, getGroupMessById,
-    postFileMess, postFileGroup, get_unreplied_user
-
+    postFileMess, postFileGroup, get_unreplied_user,
+    updateGroupName
 };
 

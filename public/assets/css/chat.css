@@ -24,3 +24,24 @@
   body::-webkit-scrollbar-thumb {
     background-color: darkgrey;
   }
+  .list-group-item:hover{
+    background-color: lightgray;
+  }
+  .form-check:hover{
+    background-color: lightgray;  
+  }
+  .swal-class{
+    font-size: 8px;
+    height: 15%;
+    width: 15rem;
+  }
+  .swal-class2{
+    font-size: 8px;
+    height: 20%;
+    width: 15rem;
+  }
+  .swal-class3{
+    font-size: 8px;
+    height: 24%;
+    width: 15rem;
+  }
