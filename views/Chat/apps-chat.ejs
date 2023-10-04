@@ -48,8 +48,7 @@
                                                 <form class="p-2">
                                                     <div class="search-box">
                                                         <div class="position-relative">
-                                                            <input type="text" class="form-control rounded"
-                                                                placeholder="Search...">
+                                                            <input type="text" class="form-control rounded" placeholder="Search...">
                                                             <i class="mdi mdi-magnify search-icon"></i>
                                                         </div>
                                                     </div>
@@ -59,10 +58,18 @@
                                     </li>
                                     <li class="d-none d-sm-inline-block">
                                         <div class="search-box me-2">
-                                            <div class="position-relative" id="search" hidden>
-                                                <input type="text" class="form-control" placeholder="Search...">
-                                                <i class="mdi mdi-magnify search-icon"></i>
+                                            <div class="position-relative input-group" id="search" hidden style="width: 200px;">
+                                                <input type="text" class="form-control" placeholder="Search..." id="searchChatMess">
+                                                <button  id="searchChatMessBtn" type="button" class="btn btn-secondary" style="border-top-right-radius: 20px; border-bottom-right-radius: 20px;">
+                                                    <i class="bi-search"></i>
+                                                </button>
                                             </div>
+                                        </div>
+                                        <div class="py-2" style="display: none;" id="nextPrev">
+                                            <button id="arrowUp" class="me-1 btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-caret-left-fill fa-lg"></i> prev</button>
+                                                <button id="arrowDown" class="me-1 btn btn-sm btn-outline-primary">next <i class="bi bi-caret-right-fill fa-lg"></i></button>
+                                            <span class="text-danger" onclick="close_nextPrev()"><i class="bi bi-x fa-lg"></i></span>
                                         </div>
                                     </li>
                                     <li class="list-inline-item m-0 d-sm-inline-block">
@@ -84,7 +91,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="px-lg-2">
                         <div class="chat-conversation p-3 myScroll"
                             style="overflow-y: auto; max-height: 486px; min-height: 486px;" id="chat_area">
@@ -93,7 +99,6 @@
                                     displayed here after you start typing!</h1>
                             </ul>
                         </div>
-
                     </div>
                     <div class="px-lg-3" >
                         <div class="p-3 pb-0 chat-input-section">

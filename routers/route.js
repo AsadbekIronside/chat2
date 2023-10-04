@@ -50,7 +50,6 @@ var postFilesGroup = multer({storage:storage4});
 app.use(urlencodeParser);
 app.use(bodyParser.json());
 app.use(cors());
-
 ////Maincontroller
 
 const mainController = require('../controllers/MainController');
@@ -66,65 +65,66 @@ module.exports = function (app) {
             else { res.redirect('/login'); }
       }
 
-      app.get('/', isUserAllowed, mainController.get_main_page);
+      app.use(isUserAllowed);
+
+      app.get('/', mainController.get_main_page);
 
       // app.post('/post-photo', (req, res)=>{
       //       console.log(req.body.profile_photo);
-      // });
+      // })
+      app.get('/delete-user',  mainController.delete_user);
 
-      app.get('/delete-user', isUserAllowed, mainController.delete_user);
+      app.post('/post-messages',  mainController.post_messages);
+      app.get('/get-messages', mainController.get_messages);
+      app.get('/get-contacts', mainController.get_contacts);
+      app.get('/get-chats', mainController.get_chats);
+      app.get('/delete-message', mainController.delete_message);
+      app.get('/get-edit-message', mainController.get_edit_message);
+      app.post('/edit-message', mainController.edit_message);
 
-      app.post('/post-messages', isUserAllowed, mainController.post_messages);
-      app.get('/get-messages', isUserAllowed, mainController.get_messages);
-      app.get('/get-contacts', isUserAllowed, mainController.get_contacts);
-      app.get('/get-chats', isUserAllowed, mainController.get_chats);
-      app.get('/delete-message', isUserAllowed, mainController.delete_message);
-      app.get('/get-edit-message', isUserAllowed, mainController.get_edit_message);
-      app.post('/edit-message', isUserAllowed, mainController.edit_message);
+      app.get('/start-chat', mainController.start_chat);
+      app.get('/clear-chat', mainController.clear_chat);
+      app.get('/get-unreplied', mainController.get_unreplied);
 
-      app.get('/start-chat', isUserAllowed, mainController.start_chat);
-      app.get('/clear-chat', isUserAllowed, mainController.clear_chat);
-      app.get('/get-unreplied', isUserAllowed, mainController.get_unreplied);
+      app.post('/update-user-name', mainController.update_account_name);
+      app.get('/get-user-info', mainController.get_user_info);
+      app.post('/update-profile-photo', upload.single('photo'), mainController.update_profile_photo);
 
-      app.post('/update-user-name', isUserAllowed, mainController.update_account_name);
-      app.get('/get-user-info', isUserAllowed, mainController.get_user_info);
-      app.post('/update-profile-photo', isUserAllowed, upload.single('photo'), mainController.update_profile_photo);
-
-      app.get('/get-active-time', isUserAllowed, mainController.get_active_time);
+      app.get('/get-active-time', mainController.get_active_time);
 
       // group
-      app.get('/all-users', isUserAllowed, mainController.get_all_users);
-      app.post('/create-group', isUserAllowed, uploadGroupPhotos.single('photo'), mainController.create_group);
-      app.get('/get-groups', isUserAllowed, mainController.get_groups);
-      app.get('/get-group-info', isUserAllowed, mainController.get_group_by_id);
-      app.get('/get-group-members', isUserAllowed, mainController.get_group_members);
-      app.get('/show-member-profile', isUserAllowed, mainController.show_member_profile);
+      app.get('/all-users', mainController.get_all_users);
+      app.post('/create-group', uploadGroupPhotos.single('photo'), mainController.create_group);
+      app.get('/get-groups', mainController.get_groups);
+      app.get('/get-group-info', mainController.get_group_by_id);
+      app.get('/get-group-members', mainController.get_group_members);
+      app.get('/show-member-profile', mainController.show_member_profile);
 
-      app.get('/leave-group', isUserAllowed, mainController.leave_group);
-      app.get('/delete-group', isUserAllowed, mainController.delete_group);
+      app.get('/leave-group', mainController.leave_group);
+      app.get('/delete-group', mainController.delete_group);
 
-      app.get('/get-users-to-add', isUserAllowed, mainController.get_users_to_add);
-      app.post('/add-users', isUserAllowed, mainController.add_users_to_group);
-      app.get('/get-group-members-info', isUserAllowed, mainController.get_group_members_info);
-      app.post('/update-group-photo', isUserAllowed, uploadGroupPhotos.single('photo'), mainController.update_group_photo);
-      app.post('/change-group-name', isUserAllowed, mainController.update_group_name);
+      app.get('/get-users-to-add', mainController.get_users_to_add);
+      app.post('/add-users', mainController.add_users_to_group);
+      app.get('/get-group-members-info', mainController.get_group_members_info);
+      app.post('/update-group-photo', uploadGroupPhotos.single('photo'), mainController.update_group_photo);
+      app.post('/change-group-name', mainController.update_group_name);
 
       /////group messages
 
-      app.get('/get-group-messages', isUserAllowed, mainController.get_group_messages);
-      app.get('/delete-group-message', isUserAllowed, mainController.delete_group_mess);
-      app.get('/get-group-edit-message', isUserAllowed, mainController.get_group_edit_mess);
+      app.get('/get-group-messages', mainController.get_group_messages);
+      app.get('/delete-group-message', mainController.delete_group_mess);
+      app.get('/get-group-edit-message', mainController.get_group_edit_mess);
       
-      app.post('/post-group-messages', isUserAllowed, mainController.post_group_messages);
-      app.post('/edit-group-message', isUserAllowed, mainController.edit_group_mess);
+      app.post('/post-group-messages', mainController.post_group_messages);
+      app.post('/edit-group-message', mainController.edit_group_mess);
 
       ///send files
 
-      app.post('/send-file', isUserAllowed, postFiles.single('file'), mainController.post_file);
-      app.post('/send-file-group', isUserAllowed, postFilesGroup.single('file'), mainController.post_file_group);
-      app.get('/get-chat-file', isUserAllowed, mainController.get_file);
-      app.get('/get-group-file', isUserAllowed, mainController.get_group_file);
-      app.get('/get-file-info', isUserAllowed, mainController.get_file_info);
-      app.get('/get-group-file-info', isUserAllowed, mainController.get_group_file_info);
+      app.post('/send-file', postFiles.single('file'), mainController.post_file);
+      app.post('/send-file-group', postFilesGroup.single('file'), mainController.post_file_group);
+      app.get('/get-chat-file', mainController.get_file);
+      app.get('/get-group-file', mainController.get_group_file);
+      app.get('/get-file-info', mainController.get_file_info);
+      app.get('/get-group-file-info', mainController.get_group_file_info);
       
 }

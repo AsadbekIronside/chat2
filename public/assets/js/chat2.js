@@ -944,4 +944,32 @@ $('#newGroupName').keypress((event)=>{
     }
 });
 
+//////search chat messages;
+var resultChatMessArray;
 
+const close_nextPrev = () => {
+    
+    if($('#ChatTitle').html() === 'Chats'){
+        $('#search').css('display', 'flex');
+        $('#nextPrev').css('display', 'none');
+        $('#searchChatMess').val('');
+    
+        for(let id of resultChatMessArray){
+            document.getElementById('message'+id).removeAttribute('style');
+        }
+    }else{
+        $('#search').css('display', 'flex');
+        $('#nextPrev').css('display', 'none');
+        $('#searchGroupMess').val('');
+    
+        for(let id of resultGroupMessArray){
+            document.getElementById('grmess'+id).removeAttribute('style');
+        }
+    }
+
+    scrollToBottom();
+}
+
+/////////////////group
+
+var resultGroupMessArray;
